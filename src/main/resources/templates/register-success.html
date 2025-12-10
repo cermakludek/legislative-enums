@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{registration.success.title}">Registration Successful</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap-icons.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-success text-white">
+                        <h4><i class="bi bi-check-circle-fill"></i> <span th:text="#{registration.success.title}">Registration Successful!</span></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success">
+                            <i class="bi bi-person-check"></i>
+                            <span th:text="#{registration.success.welcome(${registrationResult.username})}">Welcome!</span>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 th:text="#{registration.success.accountDetails}">Account Details</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="text-muted" th:text="#{registration.username}">Username:</td>
+                                    <td class="fw-bold" th:text="${registrationResult.username}">username</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted" th:text="#{registration.email}">Email:</td>
+                                    <td th:text="${registrationResult.email}">email@example.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted" th:text="#{registration.usagePlan}">Usage Plan:</td>
+                                    <td th:text="${registrationResult.usagePlan}">Plan</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted" th:text="#{registration.success.trialEnds}">Trial Ends:</td>
+                                    <td th:text="${registrationResult.trialEndDate}">2025-01-01</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 th:text="#{registration.success.apiKey}">Your API Key</h5>
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                <strong th:text="#{registration.success.apiKey.warning}">Important!</strong>
+                                <span th:text="#{registration.success.apiKey.warningText}">Save this API key now. You won't be able to see it again!</span>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control font-monospace" id="apiKey"
+                                       th:value="${registrationResult.apiKey}" readonly>
+                                <button class="btn btn-outline-primary" type="button" onclick="copyApiKey()"
+                                        th:title="#{registration.success.copy}">
+                                    <i class="bi bi-clipboard" id="copyIcon"></i>
+                                    <span th:text="#{registration.success.copy}">Copy</span>
+                                </button>
+                            </div>
+                            <div id="copySuccess" class="text-success small" style="display: none;">
+                                <i class="bi bi-check"></i> <span th:text="#{registration.success.copied}">Copied to clipboard!</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 th:text="#{registration.success.howToUse}">How to Use Your API Key</h5>
+                            <p th:text="#{registration.success.howToUseText}">Include your API key in the request header:</p>
+                            <div class="bg-dark text-light p-3 rounded font-monospace small">
+                                <code>X-API-Key: <span th:text="${registrationResult.apiKey}">your-api-key</span></code>
+                            </div>
+                            <p class="mt-2 text-muted small" th:text="#{registration.success.example}">Example curl request:</p>
+                            <div class="bg-dark text-light p-3 rounded font-monospace small overflow-auto">
+                                <code>curl -H "X-API-Key: <span th:text="${registrationResult.apiKey}">your-api-key</span>" \<br/>
+                                &nbsp;&nbsp;http://localhost:8080/api/v1/voltage-levels</code>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/login}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                <span th:text="#{registration.success.login}">Continue to Login</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        function copyApiKey() {
+            const apiKeyInput = document.getElementById('apiKey');
+            apiKeyInput.select();
+            apiKeyInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(apiKeyInput.value).then(function() {
+                const copyIcon = document.getElementById('copyIcon');
+                const copySuccess = document.getElementById('copySuccess');
+                copyIcon.className = 'bi bi-clipboard-check';
+                copySuccess.style.display = 'block';
+                setTimeout(function() {
+                    copyIcon.className = 'bi bi-clipboard';
+                    copySuccess.style.display = 'none';
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>

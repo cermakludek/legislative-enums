@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-cuzk-data
+      author: system
+      comment: Import all ČÚZK codelist data from official source
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/008-cuzk-data.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

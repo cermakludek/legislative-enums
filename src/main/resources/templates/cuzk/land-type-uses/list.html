@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{cuzk.landtypeuse.title}">Land Type Uses</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{cuzk.landtypeuse.title}">Land Type Uses</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group" aria-label="Validity filter">
+                    <a th:href="@{/web/cuzk/land-type-uses}"
+                       th:class="${!showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.validOnly}">Valid Only</a>
+                    <a th:href="@{/web/cuzk/land-type-uses(showAll=true)}"
+                       th:class="${showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.showAll}">Show All</a>
+                </div>
+                <a th:href="@{/web/cuzk/land-type-uses/create}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{common.create}">Create</span>
+                </a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th th:text="#{cuzk.landTypeCode}">Land Type Code</th>
+                            <th th:text="#{cuzk.landUseCode}">Land Use Code</th>
+                            <th th:text="#{common.validFrom}">Valid From</th>
+                            <th th:text="#{common.validTo}">Valid To</th>
+                            <th th:text="#{common.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <td th:text="${item.landTypeCode}">CODE</td>
+                            <td th:text="${item.landUseCode}">CODE</td>
+                            <td th:text="${item.validFrom != null ? #temporals.format(item.validFrom, 'dd.MM.yyyy') : '-'}">01.01.2000</td>
+                            <td th:text="${item.validTo != null ? #temporals.format(item.validTo, 'dd.MM.yyyy') : '-'}">31.12.2199</td>
+                            <td>
+                                <a th:href="@{/web/cuzk/land-type-uses/{id}/edit(id=${item.id})}" class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/web/cuzk/land-type-uses/{id}/delete(id=${item.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}" onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

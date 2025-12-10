@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{voltagelevel.title}">Voltage Levels</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{voltagelevel.title}">Voltage Levels</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group" aria-label="Validity filter">
+                    <a th:href="@{/web/voltage-levels}"
+                       th:class="${!showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.validOnly}">Valid Only</a>
+                    <a th:href="@{/web/voltage-levels(showAll=true)}"
+                       th:class="${showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.showAll}">Show All</a>
+                </div>
+                <a th:href="@{/web/voltage-levels/create}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{voltagelevel.create}">Create Voltage Level</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th th:text="#{voltagelevel.code}">Code</th>
+                            <th th:text="#{voltagelevel.name}">Name</th>
+                            <th th:text="#{voltagelevel.voltageRange}">Voltage Range</th>
+                            <th th:text="#{voltagelevel.sortOrder}">Sort Order</th>
+                            <th th:text="#{common.validFrom}">Valid From</th>
+                            <th th:text="#{common.validTo}">Valid To</th>
+                            <th th:text="#{common.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vl : ${voltageLevels}">
+                            <td th:text="${vl.code}">MN</td>
+                            <td th:text="${#locale.language == 'cs' ? vl.nameCs : vl.nameEn}">Malé napětí</td>
+                            <td th:text="${#locale.language == 'cs' ? vl.voltageRangeCs : vl.voltageRangeEn}">do 50 V</td>
+                            <td th:text="${vl.sortOrder}">1</td>
+                            <td th:text="${vl.validFrom != null ? #temporals.format(vl.validFrom, 'dd.MM.yyyy') : '-'}">01.01.2000</td>
+                            <td th:text="${vl.validTo != null ? #temporals.format(vl.validTo, 'dd.MM.yyyy') : '-'}">31.12.2199</td>
+                            <td>
+                                <a th:href="@{/web/voltage-levels/{id}/edit(id=${vl.id})}" class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/web/voltage-levels/{id}/delete(id=${vl.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

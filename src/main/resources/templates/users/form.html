@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{user.edit}">Edit User</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="#{user.edit}">Edit User</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${user}"
+                      th:action="@{/web/users/{id}(id=${user.id})}"
+                      method="post">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label" th:text="#{user.username}">Username</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label" th:text="#{user.email}">Email</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label" th:text="#{user.firstName}">First Name</label>
+                            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" maxlength="100">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label" th:text="#{user.lastName}">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" maxlength="100">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label" th:text="#{user.role}">Role</label>
+                            <select class="form-select" id="role" th:field="*{role}" required>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r.name()}"
+                                        th:text="${r.name()}"
+                                        th:selected="${user.role == r.name()}">ADMIN</option>
+                            </select>
+                            <div class="form-text">
+                                <strong>ADMIN</strong> - Full access<br>
+                                <strong>CONTRIBUTOR</strong> - Can edit codelists<br>
+                                <strong>READER</strong> - Read-only access
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="usagePlan" class="form-label" th:text="#{user.usagePlan}">Usage Plan</label>
+                            <select class="form-select" id="usagePlan" th:field="*{usagePlan}">
+                                <option value="">-- Select --</option>
+                                <option th:each="up : ${usagePlans}"
+                                        th:value="${up.name()}"
+                                        th:text="${up.displayNameCs + ' (' + up.displayNameEn + ')'}"
+                                        th:selected="${user.usagePlan == up.name()}">PER_MONTH</option>
+                            </select>
+                            <div class="form-text">
+                                <strong>PER_MONTH</strong> - Monthly billing<br>
+                                <strong>PER_YEAR</strong> - Annual billing<br>
+                                <strong>PER_REQUEST</strong> - Pay per API request
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newPassword" class="form-label" th:text="#{user.newPassword}">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}">
+                            <div class="form-text">Leave blank to keep current password</div>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex align-items-center">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" class="form-check-input" id="enabled" th:field="*{enabled}">
+                                <label class="form-check-label" for="enabled" th:text="#{user.enabled}">Enabled</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" th:text="#{user.trialEndDate}">Trial End Date</label>
+                            <p class="form-control-plaintext" th:text="${user.trialEndDate != null ? #temporals.format(user.trialEndDate, 'dd.MM.yyyy') : '-'}">01.01.2024</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" th:text="#{user.createdAt}">Created At</label>
+                            <p class="form-control-plaintext" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm') : '-'}">01.01.2024 12:00</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/users}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

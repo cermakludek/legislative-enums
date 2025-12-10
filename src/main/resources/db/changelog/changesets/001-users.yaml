@@ -1,0 +1,174 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users-table
+      author: legislative-codelists
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: usage_plan
+                  type: VARCHAR(20)
+              - column:
+                  name: trial_end_date
+                  type: DATE
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-insert-test-users
+      author: legislative-codelists
+      comment: Insert test users with different roles. Passwords are BCrypt encoded 'password123'
+      changes:
+        # Admin user - full access
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: "$2a$10$QI/HN0M/XLksChzSUgJWUeg.Oljb86mSrQPp2D1F3RL4.ny6BEQ4i"
+              - column:
+                  name: email
+                  value: admin@legislative.cz
+              - column:
+                  name: role
+                  value: ADMIN
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        # Contributor user - can edit codelists
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: contributor
+              - column:
+                  name: password
+                  value: "$2a$10$QI/HN0M/XLksChzSUgJWUeg.Oljb86mSrQPp2D1F3RL4.ny6BEQ4i"
+              - column:
+                  name: email
+                  value: contributor@legislative.cz
+              - column:
+                  name: role
+                  value: CONTRIBUTOR
+              - column:
+                  name: usage_plan
+                  value: PER_YEAR
+              - column:
+                  name: trial_end_date
+                  valueDate: "2025-12-31"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        # Reader user - read-only access
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: reader
+              - column:
+                  name: password
+                  value: "$2a$10$QI/HN0M/XLksChzSUgJWUeg.Oljb86mSrQPp2D1F3RL4.ny6BEQ4i"
+              - column:
+                  name: email
+                  value: reader@legislative.cz
+              - column:
+                  name: role
+                  value: READER
+              - column:
+                  name: usage_plan
+                  value: PER_MONTH
+              - column:
+                  name: trial_end_date
+                  valueDate: "2025-12-31"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        # Test user with trial expired
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: trial_expired
+              - column:
+                  name: password
+                  value: "$2a$10$QI/HN0M/XLksChzSUgJWUeg.Oljb86mSrQPp2D1F3RL4.ny6BEQ4i"
+              - column:
+                  name: email
+                  value: expired@legislative.cz
+              - column:
+                  name: role
+                  value: READER
+              - column:
+                  name: usage_plan
+                  value: PER_REQUEST
+              - column:
+                  name: trial_end_date
+                  valueDate: "2024-01-01"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+        # Disabled user
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: disabled_user
+              - column:
+                  name: password
+                  value: "$2a$10$QI/HN0M/XLksChzSUgJWUeg.Oljb86mSrQPp2D1F3RL4.ny6BEQ4i"
+              - column:
+                  name: email
+                  value: disabled@legislative.cz
+              - column:
+                  name: role
+                  value: READER
+              - column:
+                  name: enabled
+                  valueBoolean: false

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${voltageLevel.id != null} ? #{voltagelevel.edit} : #{voltagelevel.create}">Voltage Level Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${voltageLevel.id != null} ? #{voltagelevel.edit} : #{voltagelevel.create}">Voltage Level Form</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${voltageLevel}"
+                      th:action="${voltageLevel.id != null} ? @{/web/voltage-levels/{id}(id=${voltageLevel.id})} : @{/web/voltage-levels}"
+                      method="post">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label" th:text="#{voltagelevel.code}">Code</label>
+                            <input type="text" class="form-control" id="code" th:field="*{code}" required maxlength="10">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sortOrder" class="form-label" th:text="#{voltagelevel.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nameCs" class="form-label" th:text="#{voltagelevel.name} + ' (CS)'">Name (CS)</label>
+                            <input type="text" class="form-control" id="nameCs" th:field="*{nameCs}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameCs')}" th:errors="*{nameCs}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nameEn" class="form-label" th:text="#{voltagelevel.name} + ' (EN)'">Name (EN)</label>
+                            <input type="text" class="form-control" id="nameEn" th:field="*{nameEn}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameEn')}" th:errors="*{nameEn}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="voltageRangeCs" class="form-label" th:text="#{voltagelevel.voltageRange} + ' (CS)'">Voltage Range (CS)</label>
+                            <input type="text" class="form-control" id="voltageRangeCs" th:field="*{voltageRangeCs}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('voltageRangeCs')}" th:errors="*{voltageRangeCs}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="voltageRangeEn" class="form-label" th:text="#{voltagelevel.voltageRange} + ' (EN)'">Voltage Range (EN)</label>
+                            <input type="text" class="form-control" id="voltageRangeEn" th:field="*{voltageRangeEn}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('voltageRangeEn')}" th:errors="*{voltageRangeEn}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="validFrom" class="form-label" th:text="#{cuzk.validFrom}">Valid From</label>
+                            <input type="date" class="form-control" id="validFrom" th:field="*{validFrom}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="validTo" class="form-label" th:text="#{cuzk.validTo}">Valid To</label>
+                            <input type="date" class="form-control" id="validTo" th:field="*{validTo}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/voltage-levels}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 017-add-user-names
+      author: legislative-codelists-team
+      comment: Add first_name and last_name columns to users table
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)

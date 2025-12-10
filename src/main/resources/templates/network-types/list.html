@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{networktype.title}">Network Types</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{networktype.title}">Network Types</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group" aria-label="Validity filter">
+                    <a th:href="@{/web/network-types}"
+                       th:class="${!showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.validOnly}">Valid Only</a>
+                    <a th:href="@{/web/network-types(showAll=true)}"
+                       th:class="${showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.showAll}">Show All</a>
+                </div>
+                <a th:href="@{/web/network-types/create}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{networktype.create}">Create Network Type</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th th:text="#{networktype.code}">Code</th>
+                            <th th:text="#{networktype.name}">Name</th>
+                            <th th:text="#{networktype.description}">Description</th>
+                            <th th:text="#{networktype.sortOrder}">Sort Order</th>
+                            <th th:text="#{common.validFrom}">Valid From</th>
+                            <th th:text="#{common.validTo}">Valid To</th>
+                            <th th:text="#{common.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="nt : ${networkTypes}">
+                            <td th:text="${nt.code}">PAP</td>
+                            <td th:text="${#locale.language == 'cs' ? nt.nameCs : nt.nameEn}">Paprskové</td>
+                            <td th:text="${#locale.language == 'cs' ? nt.descriptionCs : nt.descriptionEn}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Description</td>
+                            <td th:text="${nt.sortOrder}">1</td>
+                            <td th:text="${nt.validFrom != null ? #temporals.format(nt.validFrom, 'dd.MM.yyyy') : '-'}">01.01.2000</td>
+                            <td th:text="${nt.validTo != null ? #temporals.format(nt.validTo, 'dd.MM.yyyy') : '-'}">31.12.2199</td>
+                            <td>
+                                <a th:href="@{/web/network-types/{id}/edit(id=${nt.id})}" class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/web/network-types/{id}/delete(id=${nt.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

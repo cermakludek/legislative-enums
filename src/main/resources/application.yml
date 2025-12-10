@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: legislative-enums
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:legislative_enums}
+    username: ${DB_USER:dbuser}
+    password: ${DB_PASSWORD:dbpass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    drop-first: false
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+
+# API Documentation
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  show-actuator: true
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,loggers,mappings
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Application settings
+app:
+  security:
+    basic-auth:
+      enabled: true
+    api-key:
+      enabled: true
+      header-name: X-API-Key
+
+  rate-limit:
+    free:
+      requests: 100
+      period-hours: 24
+    basic:
+      requests: 10000
+      period-hours: 720  # 30 days
+    premium:
+      requests: 100000
+      period-hours: 720  # 30 days
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+logging:
+  level:
+    cz.intelis.legislativeenums: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG

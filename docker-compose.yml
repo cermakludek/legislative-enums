@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: legislative-enums-postgres
+    environment:
+      POSTGRES_DB: legislative_enums
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - legislative-enums-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: legislative-enums-app
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: legislative_enums
+      DB_USER: dbuser
+      DB_PASSWORD: dbpass
+      # Trust proxy headers from nginx
+      SERVER_FORWARD_HEADERS_STRATEGY: NATIVE
+      SERVER_TOMCAT_REMOTEIP_REMOTE_IP_HEADER: X-Forwarded-For
+      SERVER_TOMCAT_REMOTEIP_PROTOCOL_HEADER: X-Forwarded-Proto
+    networks:
+      - legislative-enums-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    # No port exposure - nginx handles external traffic
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:alpine
+    container_name: legislative-enums-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - legislative-enums-network
+    depends_on:
+      - app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  legislative-enums-network:
+    driver: bridge

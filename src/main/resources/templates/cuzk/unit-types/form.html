@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${item.id != null} ? #{cuzk.unittype.edit} : #{cuzk.unittype.create}">Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${item.id != null} ? #{cuzk.unittype.edit} : #{cuzk.unittype.create}">Form</h2>
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${item}"
+                      th:action="${item.id != null} ? @{/web/cuzk/unit-types/{id}(id=${item.id})} : @{/web/cuzk/unit-types}"
+                      method="post">
+                    <h5 class="mb-3" th:text="#{common.basicInfo}">Basic Info</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="code" class="form-label" th:text="#{common.code}">Code</label>
+                            <input type="text" class="form-control" id="code" th:field="*{code}" required maxlength="10">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="abbreviation" class="form-label" th:text="#{cuzk.abbreviation}">Abbreviation</label>
+                            <input type="text" class="form-control" id="abbreviation" th:field="*{abbreviation}" maxlength="20">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="sortOrder" class="form-label" th:text="#{common.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nameCs" class="form-label" th:text="#{common.name} + ' (CS)'">Name (CS)</label>
+                            <input type="text" class="form-control" id="nameCs" th:field="*{nameCs}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nameEn" class="form-label" th:text="#{common.name} + ' (EN)'">Name (EN)</label>
+                            <input type="text" class="form-control" id="nameEn" th:field="*{nameEn}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descriptionCs" class="form-label" th:text="#{common.description} + ' (CS)'">Description (CS)</label>
+                        <textarea class="form-control" id="descriptionCs" th:field="*{descriptionCs}" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descriptionEn" class="form-label" th:text="#{common.description} + ' (EN)'">Description (EN)</label>
+                        <textarea class="form-control" id="descriptionEn" th:field="*{descriptionEn}" rows="2"></textarea>
+                    </div>
+                    <h5 class="mb-3 mt-4" th:text="#{cuzk.attributes}">Attributes</h5>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="civilCode" th:field="*{civilCode}">
+                        <label class="form-check-label" for="civilCode" th:text="#{cuzk.civilCode}">Civil Code</label>
+                    </div>
+                    <h5 class="mb-3 mt-4" th:text="#{cuzk.validity}">Validity</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="validFrom" class="form-label" th:text="#{cuzk.validFrom}">Valid From</label>
+                            <input type="date" class="form-control" id="validFrom" th:field="*{validFrom}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="validTo" class="form-label" th:text="#{cuzk.validTo}">Valid To</label>
+                            <input type="date" class="form-control" id="validTo" th:field="*{validTo}">
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/cuzk/unit-types}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

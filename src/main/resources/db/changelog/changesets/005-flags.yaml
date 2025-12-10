@@ -1,0 +1,222 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-flags-table
+      author: legislative-codelists
+      changes:
+        - createTable:
+            tableName: flags
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_cs
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description_cs
+                  type: VARCHAR(200)
+              - column:
+                  name: description_en
+                  type: VARCHAR(200)
+              - column:
+                  name: color
+                  type: VARCHAR(7)
+              - column:
+                  name: icon_class
+                  type: VARCHAR(50)
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 005-create-codelist-flags-table
+      author: legislative-codelists
+      changes:
+        - createTable:
+            tableName: codelist_flags
+            columns:
+              - column:
+                  name: codelist_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: flag_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: codelist_flags
+            columnNames: codelist_id, flag_id
+            constraintName: pk_codelist_flags
+        - addForeignKeyConstraint:
+            baseTableName: codelist_flags
+            baseColumnNames: codelist_id
+            referencedTableName: codelist_registry
+            referencedColumnNames: id
+            constraintName: fk_codelist_flags_codelist
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: codelist_flags
+            baseColumnNames: flag_id
+            referencedTableName: flags
+            referencedColumnNames: id
+            constraintName: fk_codelist_flags_flag
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 005-insert-sample-flags
+      author: legislative-codelists
+      changes:
+        - insert:
+            tableName: flags
+            columns:
+              - column:
+                  name: code
+                  value: ELECTRICITY
+              - column:
+                  name: name_cs
+                  value: Elektřina
+              - column:
+                  name: name_en
+                  value: Electricity
+              - column:
+                  name: description_cs
+                  value: Číselníky související s elektřinou a energetikou
+              - column:
+                  name: description_en
+                  value: Codelists related to electricity and energy
+              - column:
+                  name: color
+                  value: "#ffc107"
+              - column:
+                  name: icon_class
+                  value: bi bi-lightning
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+        - insert:
+            tableName: flags
+            columns:
+              - column:
+                  name: code
+                  value: NETWORK
+              - column:
+                  name: name_cs
+                  value: Síť
+              - column:
+                  name: name_en
+                  value: Network
+              - column:
+                  name: description_cs
+                  value: Číselníky související s přenosovou a distribuční soustavou
+              - column:
+                  name: description_en
+                  value: Codelists related to transmission and distribution network
+              - column:
+                  name: color
+                  value: "#0d6efd"
+              - column:
+                  name: icon_class
+                  value: bi bi-diagram-3
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 2
+        - insert:
+            tableName: flags
+            columns:
+              - column:
+                  name: code
+                  value: LEGISLATION
+              - column:
+                  name: name_cs
+                  value: Legislativa
+              - column:
+                  name: name_en
+                  value: Legislation
+              - column:
+                  name: description_cs
+                  value: Číselníky vyplývající z právních předpisů
+              - column:
+                  name: description_en
+                  value: Codelists derived from legal regulations
+              - column:
+                  name: color
+                  value: "#198754"
+              - column:
+                  name: icon_class
+                  value: bi bi-bank
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 3
+        - insert:
+            tableName: flags
+            columns:
+              - column:
+                  name: code
+                  value: CUZK
+              - column:
+                  name: name_cs
+                  value: Český úřad zeměměřický a katastrální
+              - column:
+                  name: name_en
+                  value: Czech Land Surveying and Cadastral Office
+              - column:
+                  name: description_cs
+                  value: Číselníky českého úřadu zeměměřičského a katastrálního
+              - column:
+                  name: description_en
+                  value: Code lists of the Czech Land Surveying and Cadastral Office
+              - column:
+                  name: color
+                  value: "#FA8072"
+              - column:
+                  name: icon_class
+                  value: bi building-fill
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 4

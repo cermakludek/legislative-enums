@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-cuzk-schema
+      author: system
+      comment: Create all ČÚZK codelist tables
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/007-cuzk-schema.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-kso-data
+      author: system
+      comment: Insert KSO data and register in codelist registry
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/011-kso-data.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

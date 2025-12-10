@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{audit.title}">Audit Log</title>
+    <style>
+        .audit-values {
+            max-width: 300px;
+            max-height: 100px;
+            overflow: auto;
+            font-family: monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .change-type-create { color: #198754; font-weight: bold; }
+        .change-type-update { color: #0d6efd; font-weight: bold; }
+        .change-type-delete { color: #dc3545; font-weight: bold; }
+        .sort-link { text-decoration: none; color: inherit; }
+        .sort-link:hover { color: #0d6efd; }
+        .sort-active { font-weight: bold; color: #0d6efd; }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{audit.title}">Audit Log</h2>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/web/audit}" method="get" class="row g-3">
+                    <div class="col-md-2">
+                        <label for="entityType" class="form-label" th:text="#{audit.entityType}">Entity Type</label>
+                        <select id="entityType" name="entityType" class="form-select">
+                            <option value="" th:text="#{common.all}">All</option>
+                            <option th:each="type : ${entityTypes}"
+                                    th:value="${type}"
+                                    th:text="${type}"
+                                    th:selected="${type == currentEntityType}">Type</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="changeType" class="form-label" th:text="#{audit.changeType}">Change Type</label>
+                        <select id="changeType" name="changeType" class="form-select">
+                            <option value="" th:text="#{common.all}">All</option>
+                            <option th:each="type : ${changeTypes}"
+                                    th:value="${type}"
+                                    th:text="${type}"
+                                    th:selected="${type.name() == currentChangeType}">Type</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="changedBy" class="form-label" th:text="#{audit.changedBy}">Changed By</label>
+                        <select id="changedBy" name="changedBy" class="form-select">
+                            <option value="" th:text="#{common.all}">All</option>
+                            <option th:each="user : ${changedByList}"
+                                    th:value="${user}"
+                                    th:text="${user}"
+                                    th:selected="${user == currentChangedBy}">User</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="search" class="form-label" th:text="#{audit.search}">Search</label>
+                        <input type="text" id="search" name="search" class="form-control"
+                               th:placeholder="#{audit.searchPlaceholder}"
+                               th:value="${currentSearch}">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search"></i> <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                        <a th:href="@{/web/audit}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort='entityType',direction=${currentSort == 'entityType' && currentDirection == 'asc' ? 'desc' : 'asc'})}"
+                                       class="sort-link"
+                                       th:classappend="${currentSort == 'entityType' ? 'sort-active' : ''}">
+                                        <span th:text="#{audit.entityType}">Entity Type</span>
+                                        <i th:if="${currentSort == 'entityType' && currentDirection == 'asc'}" class="bi bi-sort-up"></i>
+                                        <i th:if="${currentSort == 'entityType' && currentDirection == 'desc'}" class="bi bi-sort-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort='entityCode',direction=${currentSort == 'entityCode' && currentDirection == 'asc' ? 'desc' : 'asc'})}"
+                                       class="sort-link"
+                                       th:classappend="${currentSort == 'entityCode' ? 'sort-active' : ''}">
+                                        <span th:text="#{audit.entityCode}">Code</span>
+                                        <i th:if="${currentSort == 'entityCode' && currentDirection == 'asc'}" class="bi bi-sort-up"></i>
+                                        <i th:if="${currentSort == 'entityCode' && currentDirection == 'desc'}" class="bi bi-sort-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort='changeType',direction=${currentSort == 'changeType' && currentDirection == 'asc' ? 'desc' : 'asc'})}"
+                                       class="sort-link"
+                                       th:classappend="${currentSort == 'changeType' ? 'sort-active' : ''}">
+                                        <span th:text="#{audit.changeType}">Change Type</span>
+                                        <i th:if="${currentSort == 'changeType' && currentDirection == 'asc'}" class="bi bi-sort-up"></i>
+                                        <i th:if="${currentSort == 'changeType' && currentDirection == 'desc'}" class="bi bi-sort-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort='changedBy',direction=${currentSort == 'changedBy' && currentDirection == 'asc' ? 'desc' : 'asc'})}"
+                                       class="sort-link"
+                                       th:classappend="${currentSort == 'changedBy' ? 'sort-active' : ''}">
+                                        <span th:text="#{audit.changedBy}">Changed By</span>
+                                        <i th:if="${currentSort == 'changedBy' && currentDirection == 'asc'}" class="bi bi-sort-up"></i>
+                                        <i th:if="${currentSort == 'changedBy' && currentDirection == 'desc'}" class="bi bi-sort-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort='changedAt',direction=${currentSort == 'changedAt' && currentDirection == 'asc' ? 'desc' : 'asc'})}"
+                                       class="sort-link"
+                                       th:classappend="${currentSort == 'changedAt' ? 'sort-active' : ''}">
+                                        <span th:text="#{audit.changedAt}">Changed At</span>
+                                        <i th:if="${currentSort == 'changedAt' && currentDirection == 'asc'}" class="bi bi-sort-up"></i>
+                                        <i th:if="${currentSort == 'changedAt' && currentDirection == 'desc'}" class="bi bi-sort-down"></i>
+                                    </a>
+                                </th>
+                                <th th:text="#{audit.oldValues}">Old Values</th>
+                                <th th:text="#{audit.newValues}">New Values</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="log : ${auditLogs.content}">
+                                <td th:text="${log.entityType}">VoltageLevel</td>
+                                <td th:text="${log.entityCode}">MN</td>
+                                <td>
+                                    <span th:text="${log.changeType}"
+                                          th:class="${'change-type-' + log.changeType.name().toLowerCase()}">CREATE</span>
+                                </td>
+                                <td th:text="${log.changedBy}">admin</td>
+                                <td th:text="${#temporals.format(log.changedAt, 'dd.MM.yyyy HH:mm:ss')}">01.01.2024 12:00:00</td>
+                                <td>
+                                    <div class="audit-values" th:if="${log.oldValues != null}" th:text="${log.oldValues}">{ ... }</div>
+                                    <span th:if="${log.oldValues == null}">-</span>
+                                </td>
+                                <td>
+                                    <div class="audit-values" th:if="${log.newValues != null}" th:text="${log.newValues}">{ ... }</div>
+                                    <span th:if="${log.newValues == null}">-</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/web/audit/{id}(id=${log.id})}" class="btn btn-sm btn-outline-info" th:title="#{common.detail}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${auditLogs.content.empty}">
+                                <td colspan="8" class="text-center text-muted" th:text="#{audit.noRecords}">No audit records found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav th:if="${auditLogs.totalPages > 1}" aria-label="Audit log pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${auditLogs.first ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort=${currentSort},direction=${currentDirection},page=0)}">&laquo;</a>
+                        </li>
+                        <li class="page-item" th:classappend="${auditLogs.first ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort=${currentSort},direction=${currentDirection},page=${auditLogs.number - 1})}">&lsaquo;</a>
+                        </li>
+
+                        <li th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0, auditLogs.number - 2), T(java.lang.Math).min(auditLogs.totalPages - 1, auditLogs.number + 2))}"
+                            class="page-item"
+                            th:classappend="${i == auditLogs.number ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort=${currentSort},direction=${currentDirection},page=${i})}" th:text="${i + 1}">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${auditLogs.last ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort=${currentSort},direction=${currentDirection},page=${auditLogs.number + 1})}">&rsaquo;</a>
+                        </li>
+                        <li class="page-item" th:classappend="${auditLogs.last ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/web/audit(entityType=${currentEntityType},changeType=${currentChangeType},changedBy=${currentChangedBy},search=${currentSearch},sort=${currentSort},direction=${currentDirection},page=${auditLogs.totalPages - 1})}">&raquo;</a>
+                        </li>
+                    </ul>
+                    <div class="text-center text-muted">
+                        <small th:text="#{audit.pagination(${auditLogs.number + 1}, ${auditLogs.totalPages}, ${auditLogs.totalElements})}">
+                            Page 1 of 10 (100 records)
+                        </small>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

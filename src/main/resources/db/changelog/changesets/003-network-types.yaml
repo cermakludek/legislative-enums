@@ -1,0 +1,193 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-network-types-table
+      author: system
+      comment: Create network_types table
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: network_types
+      changes:
+        - createTable:
+            tableName: network_types
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_cs
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description_cs
+                  type: text
+              - column:
+                  name: description_en
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+      rollback:
+        - dropTable:
+            tableName: network_types
+
+  - changeSet:
+      id: 002-insert-network-type-PAP
+      author: system
+      comment: Insert network type PAP - Paprskové
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM network_types WHERE code = 'PAP'
+      changes:
+        - insert:
+            tableName: network_types
+            columns:
+              - column:
+                  name: code
+                  value: PAP
+              - column:
+                  name: name_cs
+                  value: Paprskové
+              - column:
+                  name: name_en
+                  value: Radial
+              - column:
+                  name: description_cs
+                  value: Jednotlivé spotřebiče, nebo části sítě jsou napájeny zvlášť vlastním vedením. Tato síť je nejjednodušší, ale také nejméně spolehlivá, protože při poruše vedení je přerušeno napájení příslušné větve. Proto se zřizují tam, kde nejsou zvýšené nároky na spolehlivost dodávky elektrické energie.
+              - column:
+                  name: description_en
+                  value: Individual appliances or parts of the network are powered separately by their own wiring. This network is the simplest but also the least reliable, because when the line fails, power to the relevant branch is interrupted. Therefore, they are established where there are no increased demands on the reliability of electricity supply.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: network_types
+            where: code = 'PAP'
+
+  - changeSet:
+      id: 002-insert-network-type-OKR
+      author: system
+      comment: Insert network type OKR - Okružní
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM network_types WHERE code = 'OKR'
+      changes:
+        - insert:
+            tableName: network_types
+            columns:
+              - column:
+                  name: code
+                  value: OKR
+              - column:
+                  name: name_cs
+                  value: Okružní
+              - column:
+                  name: name_en
+                  value: Ring
+              - column:
+                  name: description_cs
+                  value: Okružní síť je již spolehlivější, protože do každého odběrného místa je možné se dostat ze dvou stran.
+              - column:
+                  name: description_en
+                  value: Ring network is more reliable because each consumption point can be reached from two sides.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 2
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: network_types
+            where: code = 'OKR'
+
+  - changeSet:
+      id: 002-insert-network-type-MRI
+      author: system
+      comment: Insert network type MRI - Mřížové
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM network_types WHERE code = 'MRI'
+      changes:
+        - insert:
+            tableName: network_types
+            columns:
+              - column:
+                  name: code
+                  value: MRI
+              - column:
+                  name: name_cs
+                  value: Mřížové
+              - column:
+                  name: name_en
+                  value: Mesh
+              - column:
+                  name: description_cs
+                  value: Mřížová síť představuje maximální jistotu napájení jednotlivých odběrných bodů. Je ovšem složitější a nákladnější.
+              - column:
+                  name: description_en
+                  value: Mesh network provides maximum power supply security for individual consumption points. However, it is more complex and expensive.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 3
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: network_types
+            where: code = 'MRI'

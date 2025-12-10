@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-add-response-format-column
+      author: legislative-codelists
+      comment: Add response_format column to track JSON vs XML usage
+      changes:
+        - addColumn:
+            tableName: api_usage
+            columns:
+              - column:
+                  name: response_format
+                  type: VARCHAR(10)

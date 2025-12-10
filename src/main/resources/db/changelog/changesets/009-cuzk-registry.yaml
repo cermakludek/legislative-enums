@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-cuzk-registry
+      author: system
+      comment: Register all ČÚZK codelists in codelist_registry
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/009-cuzk-registry.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

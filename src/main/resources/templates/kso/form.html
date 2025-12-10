@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:if="${item.id != null}" th:text="#{kso.edit}">Edit Building Classification</title>
+    <title th:unless="${item.id != null}" th:text="#{kso.create}">Create Building Classification</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:if="${item.id != null}" th:text="#{kso.edit}">Edit Building Classification</h2>
+            <h2 th:unless="${item.id != null}" th:text="#{kso.create}">Create Building Classification</h2>
+            <a th:href="@{/web/building-classifications}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> <span th:text="#{common.back}">Back</span>
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Edit form -->
+                <form th:if="${item.id != null}"
+                      th:action="@{/web/building-classifications/{id}(id=${item.id})}"
+                      th:object="${item}" method="post">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="code" class="form-label" th:text="#{kso.code}">Code</label>
+                            <input type="text" class="form-control" id="code" th:field="*{code}"
+                                   th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}">Error</div>
+                            <small class="text-muted" th:text="#{kso.codeHelp}">e.g., 801, 801.1, 801.11, 801.11.1</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="level" class="form-label" th:text="#{kso.level}">Level</label>
+                            <select class="form-select" id="level" th:field="*{level}" required onchange="updateParentOptions()">
+                                <option value="1" th:text="#{kso.level1}">1 - Podskupina</option>
+                                <option value="2" th:text="#{kso.level2}">2 - Oddíl</option>
+                                <option value="3" th:text="#{kso.level3}">3 - Pododdíl</option>
+                                <option value="4" th:text="#{kso.level4}">4 - KMC</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="parentRow">
+                        <div class="col-md-12">
+                            <label for="parentId" class="form-label" th:text="#{kso.parent}">Parent</label>
+                            <select class="form-select" id="parentId" th:field="*{parentId}">
+                                <option value="" th:text="#{kso.noParent}">-- No parent --</option>
+                                <option th:each="parent : ${possibleParents}"
+                                        th:value="${parent.id}"
+                                        th:text="${parent.code + ' - ' + parent.nameCs}">Parent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nameCs" class="form-label" th:text="#{kso.nameCs}">Name (Czech)</label>
+                            <input type="text" class="form-control" id="nameCs" th:field="*{nameCs}"
+                                   th:classappend="${#fields.hasErrors('nameCs')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameCs')}" th:errors="*{nameCs}">Error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nameEn" class="form-label" th:text="#{kso.nameEn}">Name (English)</label>
+                            <input type="text" class="form-control" id="nameEn" th:field="*{nameEn}"
+                                   th:classappend="${#fields.hasErrors('nameEn')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameEn')}" th:errors="*{nameEn}">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="descriptionCs" class="form-label" th:text="#{kso.descriptionCs}">Description (Czech)</label>
+                            <textarea class="form-control" id="descriptionCs" th:field="*{descriptionCs}" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="descriptionEn" class="form-label" th:text="#{kso.descriptionEn}">Description (English)</label>
+                            <textarea class="form-control" id="descriptionEn" th:field="*{descriptionEn}" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sortOrder" class="form-label" th:text="#{kso.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/building-classifications}" class="btn btn-secondary" th:text="#{common.cancel}">Cancel</a>
+                    </div>
+                </form>
+
+                <!-- Create form -->
+                <form th:unless="${item.id != null}"
+                      th:action="@{/web/building-classifications}"
+                      th:object="${item}" method="post">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="code2" class="form-label" th:text="#{kso.code}">Code</label>
+                            <input type="text" class="form-control" id="code2" th:field="*{code}"
+                                   th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}">Error</div>
+                            <small class="text-muted" th:text="#{kso.codeHelp}">e.g., 801, 801.1, 801.11, 801.11.1</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="level2" class="form-label" th:text="#{kso.level}">Level</label>
+                            <select class="form-select" id="level2" th:field="*{level}" required onchange="updateParentOptions()">
+                                <option value="1" th:text="#{kso.level1}">1 - Podskupina</option>
+                                <option value="2" th:text="#{kso.level2}">2 - Oddíl</option>
+                                <option value="3" th:text="#{kso.level3}">3 - Pododdíl</option>
+                                <option value="4" th:text="#{kso.level4}">4 - KMC</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="parentRow2">
+                        <div class="col-md-12">
+                            <label for="parentId2" class="form-label" th:text="#{kso.parent}">Parent</label>
+                            <select class="form-select" id="parentId2" th:field="*{parentId}">
+                                <option value="" th:text="#{kso.noParent}">-- No parent --</option>
+                                <option th:each="parent : ${possibleParents}"
+                                        th:value="${parent.id}"
+                                        th:text="${parent.code + ' - ' + parent.nameCs}">Parent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nameCs2" class="form-label" th:text="#{kso.nameCs}">Name (Czech)</label>
+                            <input type="text" class="form-control" id="nameCs2" th:field="*{nameCs}"
+                                   th:classappend="${#fields.hasErrors('nameCs')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameCs')}" th:errors="*{nameCs}">Error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nameEn2" class="form-label" th:text="#{kso.nameEn}">Name (English)</label>
+                            <input type="text" class="form-control" id="nameEn2" th:field="*{nameEn}"
+                                   th:classappend="${#fields.hasErrors('nameEn')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameEn')}" th:errors="*{nameEn}">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="descriptionCs2" class="form-label" th:text="#{kso.descriptionCs}">Description (Czech)</label>
+                            <textarea class="form-control" id="descriptionCs2" th:field="*{descriptionCs}" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="descriptionEn2" class="form-label" th:text="#{kso.descriptionEn}">Description (English)</label>
+                            <textarea class="form-control" id="descriptionEn2" th:field="*{descriptionEn}" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sortOrder2" class="form-label" th:text="#{kso.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder2" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/building-classifications}" class="btn btn-secondary" th:text="#{common.cancel}">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            function updateParentOptions() {
+                // Try both possible element IDs (edit form and create form)
+                const levelElement = document.getElementById('level') || document.getElementById('level2');
+                const parentRow = document.getElementById('parentRow') || document.getElementById('parentRow2');
+                const parentSelect = document.getElementById('parentId') || document.getElementById('parentId2');
+
+                if (!levelElement || !parentRow || !parentSelect) return;
+
+                const level = levelElement.value;
+
+                if (level == 1) {
+                    parentRow.style.display = 'none';
+                    parentSelect.value = '';
+                } else {
+                    parentRow.style.display = 'block';
+                    // Fetch possible parents via AJAX
+                    fetch('/web/building-classifications/parents?level=' + level)
+                        .then(response => response.json())
+                        .then(data => {
+                            parentSelect.innerHTML = '<option value="">-- No parent --</option>';
+                            data.forEach(parent => {
+                                const option = document.createElement('option');
+                                option.value = parent.id;
+                                option.textContent = parent.code + ' - ' + parent.nameCs;
+                                parentSelect.appendChild(option);
+                            });
+                        });
+                }
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const levelElement = document.getElementById('level') || document.getElementById('level2');
+                const parentRow = document.getElementById('parentRow') || document.getElementById('parentRow2');
+
+                if (levelElement && parentRow && levelElement.value == 1) {
+                    parentRow.style.display = 'none';
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

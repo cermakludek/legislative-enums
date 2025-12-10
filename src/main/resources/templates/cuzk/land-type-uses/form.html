@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${item.id != null} ? #{cuzk.landtypeuse.edit} : #{cuzk.landtypeuse.create}">Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${item.id != null} ? #{cuzk.landtypeuse.edit} : #{cuzk.landtypeuse.create}">Form</h2>
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${item}"
+                      th:action="${item.id != null} ? @{/web/cuzk/land-type-uses/{id}(id=${item.id})} : @{/web/cuzk/land-type-uses}"
+                      method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="landTypeCode" class="form-label" th:text="#{cuzk.landTypeCode}">Land Type Code</label>
+                            <input type="text" class="form-control" id="landTypeCode" th:field="*{landTypeCode}" required maxlength="10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="landUseCode" class="form-label" th:text="#{cuzk.landUseCode}">Land Use Code</label>
+                            <input type="text" class="form-control" id="landUseCode" th:field="*{landUseCode}" required maxlength="10">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="validFrom" class="form-label" th:text="#{cuzk.validFrom}">Valid From</label>
+                            <input type="date" class="form-control" id="validFrom" th:field="*{validFrom}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="validTo" class="form-label" th:text="#{cuzk.validTo}">Valid To</label>
+                            <input type="date" class="form-control" id="validTo" th:field="*{validTo}">
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/cuzk/land-type-uses}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

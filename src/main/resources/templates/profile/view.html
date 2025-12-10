@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{profile.title}">User Profile</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{profile.title}">User Profile</h2>
+        </div>
+
+        <!-- New API Key Alert -->
+        <div th:if="${newApiKey}" class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong th:text="#{profile.newApiKeyGenerated}">New API key generated!</strong>
+            <p th:text="#{profile.copyWarning}">Copy your new API key now. You won't be able to see it again!</p>
+            <div class="input-group mt-2">
+                <input type="text" class="form-control font-monospace" th:value="${newApiKey}" id="newApiKeyInput" readonly>
+                <button class="btn btn-outline-secondary" type="button" onclick="copyApiKey()">
+                    <i class="bi bi-clipboard"></i> <span th:text="#{profile.copy}">Copy</span>
+                </button>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <!-- User Info Card -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person-circle"></i> <span th:text="#{profile.userInfo}">User Information</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th th:text="#{profile.username}">Username:</th>
+                                <td th:text="${user.username}">username</td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{user.firstName}">First Name:</th>
+                                <td th:text="${user.firstName != null && !user.firstName.isBlank()} ? ${user.firstName} : '-'">-</td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{user.lastName}">Last Name:</th>
+                                <td th:text="${user.lastName != null && !user.lastName.isBlank()} ? ${user.lastName} : '-'">-</td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{profile.email}">Email:</th>
+                                <td th:text="${user.email}">email@example.com</td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{profile.role}">Role:</th>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${user.role == 'ADMIN' ? 'bg-danger' : (user.role == 'CONTRIBUTOR' ? 'bg-warning' : 'bg-secondary')}"
+                                          th:text="${user.role}">READER</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{profile.usagePlan}">Usage Plan:</th>
+                                <td th:text="${user.usagePlan != null ? (#locale.language == 'cs' ? user.usagePlan : user.usagePlan) : '-'}">Plan</td>
+                            </tr>
+                            <tr th:if="${user.trialEndDate != null}">
+                                <th th:text="#{profile.trialEndDate}">Trial End:</th>
+                                <td th:text="${user.trialEndDate}">2024-01-01</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Keys Card -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-key"></i> <span th:text="#{profile.apiKeys}">API Keys</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(apiKeys)}" class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> <span th:text="#{profile.noApiKeys}">No API keys found.</span>
+                        </div>
+
+                        <div th:each="key : ${apiKeys}" class="mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong th:text="${key.name}">Key Name</strong>
+                                <span th:if="${key.enabled}" class="badge bg-success" th:text="#{profile.enabled}">Enabled</span>
+                                <span th:unless="${key.enabled}" class="badge bg-secondary" th:text="#{profile.disabled}">Disabled</span>
+                            </div>
+                            <div class="mb-2">
+                                <code class="text-muted" th:text="${key.apiKey.substring(0, 8) + '...' + key.apiKey.substring(key.apiKey.length() - 4)}">xxxx...xxxx</code>
+                            </div>
+                            <small class="text-muted" th:if="${key.expiresAt != null}">
+                                <span th:text="#{profile.expiresAt}">Expires:</span> <span th:text="${key.expiresAt}">date</span>
+                            </small>
+                        </div>
+
+                        <hr>
+
+                        <form th:action="@{/web/profile/regenerate-api-key}" method="post">
+                            <button type="submit" class="btn btn-warning w-100"
+                                    onclick="return confirm('Opravdu chcete přegenerovat API klíč? Starý klíč přestane fungovat.')">
+                                <i class="bi bi-arrow-repeat"></i> <span th:text="#{profile.regenerateApiKey}">Regenerate API Key</span>
+                            </button>
+                        </form>
+                        <small class="text-muted d-block mt-2" th:text="#{profile.regenerateWarning}">
+                            Warning: Regenerating the API key will invalidate the old key.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            function copyApiKey() {
+                var input = document.getElementById('newApiKeyInput');
+                input.select();
+                input.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(input.value);
+                alert('API klíč byl zkopírován do schránky!');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

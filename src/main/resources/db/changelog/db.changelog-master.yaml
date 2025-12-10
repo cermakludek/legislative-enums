@@ -1,0 +1,50 @@
+databaseChangeLog:
+  # Core application tables
+  - include:
+      file: db/changelog/changesets/001-users.yaml
+  - include:
+      file: db/changelog/changesets/002-voltage-levels.yaml
+  - include:
+      file: db/changelog/changesets/003-network-types.yaml
+  - include:
+      file: db/changelog/changesets/004-codelist-registry.yaml
+  - include:
+      file: db/changelog/changesets/005-flags.yaml
+  - include:
+      file: db/changelog/changesets/006-api-keys.yaml
+
+  # ČÚZK codelists (consolidated)
+  - include:
+      file: db/changelog/changesets/007-cuzk-schema.yaml
+  - include:
+      file: db/changelog/changesets/008-cuzk-data.yaml
+  - include:
+      file: db/changelog/changesets/009-cuzk-registry.yaml
+
+  # KSO - Building Classifications
+  - include:
+      file: db/changelog/changesets/010-kso-schema.yaml
+  - include:
+      file: db/changelog/changesets/011-kso-data.yaml
+  - include:
+      file: db/changelog/changesets/012-kso-fix.yaml
+
+  # Analytics enhancements
+  - include:
+      file: db/changelog/changesets/013-response-format.yaml
+
+  # Audit columns for BaseEntity
+  - include:
+      file: db/changelog/changesets/014-audit-columns.yaml
+
+  # Remove active column, normalize validity dates
+  - include:
+      file: db/changelog/changesets/015-remove-active-add-validity.yaml
+
+  # Audit log for tracking codelist changes
+  - include:
+      file: db/changelog/changesets/016-audit-log.yaml
+
+  # Add first_name and last_name to users
+  - include:
+      file: db/changelog/changesets/017-user-names.yaml

@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    show-sql: false
+
+  thymeleaf:
+    cache: true
+
+logging:
+  level:
+    cz.intelis.legislativeenums: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+  # Trust proxy headers from nginx reverse proxy
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Forwarded-For
+      protocol-header: X-Forwarded-Proto

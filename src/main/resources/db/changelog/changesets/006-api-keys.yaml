@@ -1,0 +1,174 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-api-keys-table
+      author: legislative-codelists
+      changes:
+        - createTable:
+            tableName: api_keys
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: api_keys
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_api_keys_user
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 006-create-api-usage-table
+      author: legislative-codelists
+      changes:
+        - createTable:
+            tableName: api_usage
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_key_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: endpoint
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_count
+                  type: INT
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ip_address
+                  type: VARCHAR(45)
+              - column:
+                  name: user_agent
+                  type: VARCHAR(500)
+              - column:
+                  name: response_status
+                  type: INT
+              - column:
+                  name: response_time_ms
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseTableName: api_usage
+            baseColumnNames: api_key_id
+            referencedTableName: api_keys
+            referencedColumnNames: id
+            constraintName: fk_api_usage_api_key
+            onDelete: CASCADE
+        - createIndex:
+            tableName: api_usage
+            indexName: idx_api_key_timestamp
+            columns:
+              - column:
+                  name: api_key_id
+              - column:
+                  name: timestamp
+        - createIndex:
+            tableName: api_usage
+            indexName: idx_timestamp
+            columns:
+              - column:
+                  name: timestamp
+
+  - changeSet:
+      id: 006-insert-test-api-keys
+      author: legislative-codelists
+      comment: Insert test API keys for existing users
+      changes:
+        - insert:
+            tableName: api_keys
+            columns:
+              - column:
+                  name: api_key
+                  value: "test-admin-api-key-12345"
+              - column:
+                  name: name
+                  value: "Admin Test Key"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+        - insert:
+            tableName: api_keys
+            columns:
+              - column:
+                  name: api_key
+                  value: "test-contributor-api-key-67890"
+              - column:
+                  name: name
+                  value: "Contributor Test Key"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+        - insert:
+            tableName: api_keys
+            columns:
+              - column:
+                  name: api_key
+                  value: "test-reader-api-key-abcde"
+              - column:
+                  name: name
+                  value: "Reader Test Key"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+              - column:
+                  name: user_id
+                  valueNumeric: 3

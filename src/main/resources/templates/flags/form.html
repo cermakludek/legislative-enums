@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${flag.id != null} ? #{flag.edit} : #{flag.create}">Flag Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${flag.id != null} ? #{flag.edit} : #{flag.create}">Flag Form</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${flag}"
+                      th:action="${flag.id != null} ? @{/web/flags/{id}(id=${flag.id})} : @{/web/flags}"
+                      method="post">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label" th:text="#{flag.code}">Code</label>
+                            <input type="text" class="form-control" id="code" th:field="*{code}" required maxlength="30">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sortOrder" class="form-label" th:text="#{flag.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nameCs" class="form-label" th:text="#{flag.name} + ' (CS)'">Name (CS)</label>
+                            <input type="text" class="form-control" id="nameCs" th:field="*{nameCs}" required maxlength="50">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameCs')}" th:errors="*{nameCs}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nameEn" class="form-label" th:text="#{flag.name} + ' (EN)'">Name (EN)</label>
+                            <input type="text" class="form-control" id="nameEn" th:field="*{nameEn}" required maxlength="50">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameEn')}" th:errors="*{nameEn}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="descriptionCs" class="form-label" th:text="#{flag.description} + ' (CS)'">Description (CS)</label>
+                            <input type="text" class="form-control" id="descriptionCs" th:field="*{descriptionCs}" maxlength="200">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="descriptionEn" class="form-label" th:text="#{flag.description} + ' (EN)'">Description (EN)</label>
+                            <input type="text" class="form-control" id="descriptionEn" th:field="*{descriptionEn}" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="color" class="form-label" th:text="#{flag.color}">Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="colorPicker"
+                                       th:value="${flag.color != null ? flag.color : '#0d6efd'}"
+                                       onchange="document.getElementById('color').value = this.value">
+                                <input type="text" class="form-control" id="color" th:field="*{color}" maxlength="7"
+                                       placeholder="#0d6efd">
+                            </div>
+                            <div class="form-text">HEX color code (e.g., #0d6efd)</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="iconClass" class="form-label" th:text="#{flag.iconClass}">Icon Class</label>
+                            <input type="text" class="form-control" id="iconClass" th:field="*{iconClass}" maxlength="50"
+                                   placeholder="bi bi-tag">
+                            <div class="form-text">Bootstrap Icons class</div>
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                                <label class="form-check-label" for="active" th:text="#{flag.active}">Active</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Preview</label>
+                        <div>
+                            <span class="badge" id="preview"
+                                  th:style="${flag.color != null ? 'background-color: ' + flag.color : 'background-color: #0d6efd'}"
+                                  th:text="${flag.nameCs != null ? flag.nameCs : 'Preview'}">Preview</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/flags}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            document.getElementById('color').addEventListener('input', function() {
+                document.getElementById('colorPicker').value = this.value;
+                document.getElementById('preview').style.backgroundColor = this.value;
+            });
+            document.getElementById('nameCs').addEventListener('input', function() {
+                document.getElementById('preview').textContent = this.value || 'Preview';
+            });
+        </script>
+    </div>
+</body>
+</html>

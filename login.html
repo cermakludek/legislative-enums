@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přihlášení</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4>Legislativní číselníky</h4>
+                        <p>Přihlášení</p>
+                    </div>
+                    <div class="card-body">
+                        
+                        
+                        
+
+                        <form action="/login" method="post"><input type="hidden" name="_csrf" value="nSJNMQa2A4Vka9ZAutBLjNAwXG7mzs_f0d4zIoXNtdujKVBI-RMvA2eHN-NJXu9yjv1_tOcFcQyF-fny5-4AFrb60LjBGTR7"/>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Uživatelské jméno</label>
+                                <input type="text" class="form-control" id="username" name="username" required autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Heslo</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
+                                <label class="form-check-label" for="remember-me">Zapamatovat si mě</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Přihlásit se</button>
+                        </form>
+
+                        <hr class="my-3">
+
+                        <div class="text-center">
+                            <span>Nemáte účet?</span>
+                            <a href="/register">Zaregistrujte se</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

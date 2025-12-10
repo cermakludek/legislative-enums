@@ -1,0 +1,481 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-add-audit-columns-voltage-levels
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to voltage_levels table
+      changes:
+        - addColumn:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+      rollback:
+        - dropColumn:
+            tableName: voltage_levels
+            columnName: created_by
+        - dropColumn:
+            tableName: voltage_levels
+            columnName: updated_by
+        - dropColumn:
+            tableName: voltage_levels
+            columnName: valid_from
+        - dropColumn:
+            tableName: voltage_levels
+            columnName: valid_to
+
+  - changeSet:
+      id: 014-add-audit-columns-network-types
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to network_types table
+      changes:
+        - addColumn:
+            tableName: network_types
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+      rollback:
+        - dropColumn:
+            tableName: network_types
+            columnName: created_by
+        - dropColumn:
+            tableName: network_types
+            columnName: updated_by
+        - dropColumn:
+            tableName: network_types
+            columnName: valid_from
+        - dropColumn:
+            tableName: network_types
+            columnName: valid_to
+
+  - changeSet:
+      id: 014-add-audit-columns-codelist-registry
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to codelist_registry table
+      changes:
+        - addColumn:
+            tableName: codelist_registry
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+      rollback:
+        - dropColumn:
+            tableName: codelist_registry
+            columnName: created_by
+        - dropColumn:
+            tableName: codelist_registry
+            columnName: updated_by
+        - dropColumn:
+            tableName: codelist_registry
+            columnName: valid_from
+        - dropColumn:
+            tableName: codelist_registry
+            columnName: valid_to
+
+  - changeSet:
+      id: 014-add-audit-columns-flags
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to flags table
+      changes:
+        - addColumn:
+            tableName: flags
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+      rollback:
+        - dropColumn:
+            tableName: flags
+            columnName: created_by
+        - dropColumn:
+            tableName: flags
+            columnName: updated_by
+        - dropColumn:
+            tableName: flags
+            columnName: valid_from
+        - dropColumn:
+            tableName: flags
+            columnName: valid_to
+
+  # ČÚZK tables - add created_by and updated_by columns (valid_from and valid_to already exist)
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-land-types
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_land_types table
+      changes:
+        - addColumn:
+            tableName: cuzk_land_types
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_land_types
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_land_types
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-land-uses
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_land_uses table
+      changes:
+        - addColumn:
+            tableName: cuzk_land_uses
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_land_uses
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_land_uses
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-land-type-uses
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to cuzk_land_type_uses table
+      changes:
+        - addColumn:
+            tableName: cuzk_land_type_uses
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+              - column:
+                  name: sort_order
+                  type: int
+      rollback:
+        - dropColumn:
+            tableName: cuzk_land_type_uses
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_land_type_uses
+            columnName: updated_by
+        - dropColumn:
+            tableName: cuzk_land_type_uses
+            columnName: valid_from
+        - dropColumn:
+            tableName: cuzk_land_type_uses
+            columnName: valid_to
+        - dropColumn:
+            tableName: cuzk_land_type_uses
+            columnName: sort_order
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-building-types
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_building_types table
+      changes:
+        - addColumn:
+            tableName: cuzk_building_types
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_building_types
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_building_types
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-building-uses
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_building_uses table
+      changes:
+        - addColumn:
+            tableName: cuzk_building_uses
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_building_uses
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_building_uses
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-building-type-uses
+      author: system
+      comment: Add audit columns (created_by, updated_by, valid_from, valid_to) to cuzk_building_type_uses table
+      changes:
+        - addColumn:
+            tableName: cuzk_building_type_uses
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+              - column:
+                  name: valid_from
+                  type: date
+              - column:
+                  name: valid_to
+                  type: date
+              - column:
+                  name: sort_order
+                  type: int
+      rollback:
+        - dropColumn:
+            tableName: cuzk_building_type_uses
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_building_type_uses
+            columnName: updated_by
+        - dropColumn:
+            tableName: cuzk_building_type_uses
+            columnName: valid_from
+        - dropColumn:
+            tableName: cuzk_building_type_uses
+            columnName: valid_to
+        - dropColumn:
+            tableName: cuzk_building_type_uses
+            columnName: sort_order
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-area-determinations
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_area_determinations table
+      changes:
+        - addColumn:
+            tableName: cuzk_area_determinations
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_area_determinations
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_area_determinations
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-building-right-purposes
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_building_right_purposes table
+      changes:
+        - addColumn:
+            tableName: cuzk_building_right_purposes
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_building_right_purposes
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_building_right_purposes
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-unit-types
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_unit_types table
+      changes:
+        - addColumn:
+            tableName: cuzk_unit_types
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_unit_types
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_unit_types
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-unit-uses
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_unit_uses table
+      changes:
+        - addColumn:
+            tableName: cuzk_unit_uses
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_unit_uses
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_unit_uses
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-property-protection-types
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_property_protection_types table
+      changes:
+        - addColumn:
+            tableName: cuzk_property_protection_types
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_property_protection_types
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_property_protection_types
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-property-protections
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_property_protections table
+      changes:
+        - addColumn:
+            tableName: cuzk_property_protections
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_property_protections
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_property_protections
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-simplified-parcel-sources
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_simplified_parcel_sources table
+      changes:
+        - addColumn:
+            tableName: cuzk_simplified_parcel_sources
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_simplified_parcel_sources
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_simplified_parcel_sources
+            columnName: updated_by
+
+  - changeSet:
+      id: 014-add-audit-columns-cuzk-soil-ecological-units
+      author: system
+      comment: Add audit columns (created_by, updated_by) to cuzk_soil_ecological_units table
+      changes:
+        - addColumn:
+            tableName: cuzk_soil_ecological_units
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(100)
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+      rollback:
+        - dropColumn:
+            tableName: cuzk_soil_ecological_units
+            columnName: created_by
+        - dropColumn:
+            tableName: cuzk_soil_ecological_units
+            columnName: updated_by

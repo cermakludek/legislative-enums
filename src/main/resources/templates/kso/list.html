@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{kso.title}">Building Classifications (KSO)</title>
+    <style>
+        .tree-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tree-item:hover {
+            background-color: rgba(0,0,0,.075);
+        }
+        .tree-item.odd {
+            background-color: rgba(0,0,0,.05);
+        }
+        .tree-item.odd:hover {
+            background-color: rgba(0,0,0,.1);
+        }
+        .level-1 { font-weight: bold; font-size: 1.05em; }
+        .level-2 { padding-left: 35px; }
+        .level-3 { padding-left: 60px; font-size: 0.95em; }
+        .level-4 { padding-left: 85px; font-size: 0.9em; }
+        .tree-code { color: #6c757d; font-family: monospace; margin-right: 10px; min-width: 60px; display: inline-block; }
+        .tree-children { margin-left: 0; }
+        .tree-actions { white-space: nowrap; }
+        .tree-actions .btn { margin-left: 4px; }
+        .tree-actions form.d-inline { display: inline; }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{kso.title}">Building Classifications (KSO)</h2>
+            <div class="d-flex gap-2">
+                <a th:href="@{/web/building-classifications/create}" class="btn btn-primary" sec:authorize="hasAnyRole('ADMIN', 'CONTRIBUTOR')">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{kso.create}">Create</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(tree)}" class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <span th:text="#{kso.empty}">No items found.</span>
+                </div>
+
+                <th:block th:with="rowIndex = ${#numbers.sequence(0,0)}">
+                <div th:each="root, rootStat : ${tree}">
+                    <!-- Level 1 - Obor -->
+                    <div th:class="'tree-item level-1 d-flex align-items-center' + ${rootStat.odd ? ' odd' : ''}">
+                        <span class="tree-code" th:text="${root.code}">8</span>
+                        <span class="flex-grow-1" th:text="${#locale.language == 'cs' ? root.nameCs : root.nameEn}">Stavební objekty</span>
+                        <span class="tree-actions" sec:authorize="hasAnyRole('ADMIN', 'CONTRIBUTOR')">
+                            <a th:href="@{/web/building-classifications/{id}/edit(id=${root.id})}"
+                               class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form th:if="${#lists.isEmpty(root.children)}"
+                                  th:action="@{/web/building-classifications/{id}/delete(id=${root.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                        onclick="return confirm('Opravdu chcete smazat tuto položku?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </span>
+                    </div>
+
+                    <!-- Level 2 - Skupina -->
+                    <div th:if="${not #lists.isEmpty(root.children)}" class="tree-children">
+                        <div th:each="group, groupStat : ${root.children}">
+                            <div th:class="'tree-item level-2 d-flex align-items-center' + ${groupStat.odd ? ' odd' : ''}">
+                                <span class="tree-code" th:text="${group.code}">80</span>
+                                <span class="flex-grow-1" th:text="${#locale.language == 'cs' ? group.nameCs : group.nameEn}">Pozemní stavby</span>
+                                <span class="tree-actions" sec:authorize="hasAnyRole('ADMIN', 'CONTRIBUTOR')">
+                                    <a th:href="@{/web/building-classifications/{id}/edit(id=${group.id})}"
+                                       class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form th:if="${#lists.isEmpty(group.children)}"
+                                          th:action="@{/web/building-classifications/{id}/delete(id=${group.id})}"
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                                onclick="return confirm('Opravdu chcete smazat tuto položku?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </span>
+                            </div>
+
+                            <!-- Level 3 - Podskupina -->
+                            <div th:if="${not #lists.isEmpty(group.children)}" class="tree-children">
+                                <div th:each="subgroup, subgroupStat : ${group.children}">
+                                    <div th:class="'tree-item level-3 d-flex align-items-center' + ${subgroupStat.odd ? ' odd' : ''}">
+                                        <span class="tree-code" th:text="${subgroup.code}">801</span>
+                                        <span class="flex-grow-1" th:text="${#locale.language == 'cs' ? subgroup.nameCs : subgroup.nameEn}">Budovy občanské výstavby</span>
+                                        <span class="tree-actions" sec:authorize="hasAnyRole('ADMIN', 'CONTRIBUTOR')">
+                                            <a th:href="@{/web/building-classifications/{id}/edit(id=${subgroup.id})}"
+                                               class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:if="${#lists.isEmpty(subgroup.children)}"
+                                                  th:action="@{/web/building-classifications/{id}/delete(id=${subgroup.id})}"
+                                                  method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                                        onclick="return confirm('Opravdu chcete smazat tuto položku?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </span>
+                                    </div>
+
+                                    <!-- Level 4 - KMC -->
+                                    <div th:if="${not #lists.isEmpty(subgroup.children)}" class="tree-children">
+                                        <div th:each="kmc, kmcStat : ${subgroup.children}"
+                                             th:class="'tree-item level-4 d-flex align-items-center' + ${kmcStat.odd ? ' odd' : ''}">
+                                            <span class="tree-code" th:text="${kmc.code}">8011</span>
+                                            <span class="flex-grow-1" th:text="${#locale.language == 'cs' ? kmc.nameCs : kmc.nameEn}">Detail</span>
+                                            <span class="tree-actions" sec:authorize="hasAnyRole('ADMIN', 'CONTRIBUTOR')">
+                                                <a th:href="@{/web/building-classifications/{id}/edit(id=${kmc.id})}"
+                                                   class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form th:action="@{/web/building-classifications/{id}/delete(id=${kmc.id})}"
+                                                      method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                                            onclick="return confirm('Opravdu chcete smazat tuto položku?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

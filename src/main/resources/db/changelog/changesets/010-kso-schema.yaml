@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-kso-schema
+      author: system
+      comment: Create KSO (Building Classifications) table
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/010-kso-schema.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

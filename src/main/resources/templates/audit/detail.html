@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{audit.detail.title}">Audit Log Detail</title>
+    <style>
+        .json-display {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow: auto;
+        }
+        .change-type-create { color: #198754; }
+        .change-type-update { color: #0d6efd; }
+        .change-type-delete { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{audit.detail.title}">Audit Log Detail</h2>
+            <a th:href="@{/web/audit}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> <span th:text="#{common.back}">Back</span>
+            </a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 th:text="#{audit.detail.info}">Change Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4" th:text="#{audit.entityType}">Entity Type</dt>
+                            <dd class="col-sm-8" th:text="${auditLog.entityType}">VoltageLevel</dd>
+
+                            <dt class="col-sm-4" th:text="#{audit.entityId}">Entity ID</dt>
+                            <dd class="col-sm-8" th:text="${auditLog.entityId}">1</dd>
+
+                            <dt class="col-sm-4" th:text="#{audit.entityCode}">Entity Code</dt>
+                            <dd class="col-sm-8" th:text="${auditLog.entityCode}">MN</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4" th:text="#{audit.changeType}">Change Type</dt>
+                            <dd class="col-sm-8">
+                                <span th:text="${auditLog.changeType}"
+                                      th:class="${'change-type-' + auditLog.changeType.name().toLowerCase()}">CREATE</span>
+                            </dd>
+
+                            <dt class="col-sm-4" th:text="#{audit.changedBy}">Changed By</dt>
+                            <dd class="col-sm-8" th:text="${auditLog.changedBy}">admin</dd>
+
+                            <dt class="col-sm-4" th:text="#{audit.changedAt}">Changed At</dt>
+                            <dd class="col-sm-8" th:text="${#temporals.format(auditLog.changedAt, 'dd.MM.yyyy HH:mm:ss')}">01.01.2024 12:00:00</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6" th:if="${auditLog.changeType.name() != 'CREATE'}">
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0" th:text="#{audit.oldValues}">Old Values</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="json-display" th:if="${auditLog.oldValues != null}" th:text="${auditLog.oldValues}">{ ... }</div>
+                        <p class="text-muted" th:if="${auditLog.oldValues == null}" th:text="#{audit.noOldValues}">No old values</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" th:classappend="${auditLog.changeType.name() == 'CREATE' ? 'col-md-12' : ''}" th:if="${auditLog.changeType.name() != 'DELETE'}">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0" th:text="#{audit.newValues}">New Values</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="json-display" th:if="${auditLog.newValues != null}" th:text="${auditLog.newValues}">{ ... }</div>
+                        <p class="text-muted" th:if="${auditLog.newValues == null}" th:text="#{audit.noNewValues}">No new values</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" th:if="${auditLog.changeType.name() == 'DELETE'}">
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0" th:text="#{audit.deletedValues}">Deleted Values</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="json-display" th:if="${auditLog.oldValues != null}" th:text="${auditLog.oldValues}">{ ... }</div>
+                        <p class="text-muted" th:if="${auditLog.oldValues == null}" th:text="#{audit.noOldValues}">No values recorded</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

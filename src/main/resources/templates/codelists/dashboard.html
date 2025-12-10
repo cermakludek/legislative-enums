@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{codelist.dashboard.title}">Codelists Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{codelist.dashboard.title}">Available Codelists</h2>
+            <!-- Search -->
+            <div class="input-group" style="max-width: 300px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="searchInput"
+                       th:placeholder="#{common.search}" onkeyup="filterCodelists()">
+            </div>
+        </div>
+
+        <!-- Flag Filter -->
+        <div th:if="${not #lists.isEmpty(flags)}" class="mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="text-muted me-2" th:text="#{codelist.dashboard.filterByFlag}">Filter by flag:</span>
+                <a th:href="@{/web/codelists}"
+                   th:class="${selectedFlagId == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}"
+                   th:text="#{codelist.dashboard.allCodelists}">All</a>
+                <a th:each="flag : ${flags}"
+                   th:href="@{/web/codelists(flagId=${flag.id})}"
+                   class="btn btn-sm"
+                   th:classappend="${selectedFlagId != null && selectedFlagId == flag.id ? '' : 'btn-outline-'}"
+                   th:style="${flag.color != null ? 'background-color: ' + (selectedFlagId != null && selectedFlagId == flag.id ? flag.color : 'transparent') + '; border-color: ' + flag.color + '; color: ' + (selectedFlagId != null && selectedFlagId == flag.id ? 'white' : flag.color) : ''}"
+                   th:text="${#locale.language == 'cs' ? flag.nameCs : flag.nameEn}">Flag</a>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="codelistsContainer">
+            <div class="col codelist-item" th:each="codelist : ${codelists}"
+                 th:data-search="${codelist.nameCs + ' ' + codelist.nameEn + ' ' + (codelist.descriptionCs ?: '') + ' ' + (codelist.descriptionEn ?: '') + ' ' + codelist.code}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i th:class="${codelist.iconClass != null ? codelist.iconClass + ' fs-2 me-3 text-primary' : 'bi bi-list-ul fs-2 me-3 text-primary'}"></i>
+                            <h5 class="card-title mb-0" th:text="${#locale.language == 'cs' ? codelist.nameCs : codelist.nameEn}">Codelist Name</h5>
+                        </div>
+                        <p class="card-text text-muted" th:text="${#locale.language == 'cs' ? codelist.descriptionCs : codelist.descriptionEn}"
+                           style="min-height: 60px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                            Description of the codelist
+                        </p>
+                        <!-- Flags -->
+                        <div th:if="${not #sets.isEmpty(codelist.flags)}" class="mt-2">
+                            <span th:each="flag : ${codelist.flags}"
+                                  class="badge me-1"
+                                  th:style="${flag.color != null ? 'background-color: ' + flag.color : ''}"
+                                  th:text="${#locale.language == 'cs' ? flag.nameCs : flag.nameEn}">Flag</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex justify-content-between">
+                            <a th:href="${codelist.webUrl}" class="btn btn-primary btn-sm" target="_blank">
+                                <i class="bi bi-eye"></i> <span th:text="#{codelist.dashboard.view}">View</span>
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    th:data-api-url="${codelist.apiUrl}"
+                                    th:data-codelist-name="${#locale.language == 'cs' ? codelist.nameCs : codelist.nameEn}"
+                                    onclick="showApiModal(this)">
+                                <i class="bi bi-code-slash"></i> API
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(codelists)}" class="alert alert-info mt-4">
+            <i class="bi bi-info-circle"></i> <span th:text="#{codelist.dashboard.empty}">No codelists available.</span>
+        </div>
+
+        <!-- API Modal -->
+        <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="apiModalLabel">
+                            <i class="bi bi-code-slash"></i> API - <span id="apiCodelistName">Codelist</span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div th:if="${userApiKey}" class="mb-4">
+                            <h6 th:text="#{codelist.api.yourKey}">Your API Key</h6>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control font-monospace" id="modalApiKey"
+                                       th:value="${userApiKey}" readonly>
+                                <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('modalApiKey')">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div th:if="${userApiKey == null}" class="alert alert-warning mb-4">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span th:text="#{codelist.api.noKey}">You don't have an API key. Please contact administrator.</span>
+                        </div>
+
+                        <h6 th:text="#{codelist.api.endpoint}">API Endpoint</h6>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control font-monospace" id="apiEndpoint" readonly>
+                            <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('apiEndpoint')">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+
+                        <h6 th:text="#{codelist.api.format}">Response Format</h6>
+                        <div class="btn-group mb-3" role="group" aria-label="Response format">
+                            <input type="radio" class="btn-check" name="responseFormat" id="formatJson" value="json" checked onchange="updateCurlExample()">
+                            <label class="btn btn-outline-primary" for="formatJson">
+                                <i class="bi bi-braces"></i> JSON
+                            </label>
+                            <input type="radio" class="btn-check" name="responseFormat" id="formatXml" value="xml" onchange="updateCurlExample()">
+                            <label class="btn btn-outline-primary" for="formatXml">
+                                <i class="bi bi-filetype-xml"></i> XML
+                            </label>
+                        </div>
+
+                        <h6 th:text="#{codelist.api.curlExample}">cURL Example</h6>
+                        <div class="bg-dark text-light p-3 rounded font-monospace small position-relative">
+                            <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-2"
+                                    onclick="copyToClipboard('curlExample')">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                            <code id="curlExample"></code>
+                        </div>
+
+                        <div class="mt-4">
+                            <h6 th:text="#{codelist.api.tryIt}">Try it</h6>
+                            <button type="button" class="btn btn-success" onclick="executeApiCall()" th:if="${userApiKey}">
+                                <i class="bi bi-play-fill"></i> <span th:text="#{codelist.api.execute}">Execute</span>
+                            </button>
+                            <div id="apiResponse" class="mt-3" style="display: none;">
+                                <h6 th:text="#{codelist.api.response}">Response</h6>
+                                <pre class="bg-light p-3 rounded small" style="max-height: 300px; overflow: auto;"><code id="apiResponseContent"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{common.close}">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            const userApiKey = /*[[${userApiKey}]]*/ '';
+            const baseUrl = window.location.origin;
+            let currentApiUrl = '';
+
+            function getSelectedFormat() {
+                return document.querySelector('input[name="responseFormat"]:checked').value;
+            }
+
+            function getAcceptHeader() {
+                return getSelectedFormat() === 'xml' ? 'application/xml' : 'application/json';
+            }
+
+            function updateCurlExample() {
+                const format = getSelectedFormat();
+                const acceptHeader = getAcceptHeader();
+                const curlCmd = `curl -X GET "${currentApiUrl}" \\\n  -H "X-API-Key: ${userApiKey || 'YOUR_API_KEY'}" \\\n  -H "Accept: ${acceptHeader}"`;
+                document.getElementById('curlExample').textContent = curlCmd;
+            }
+
+            function showApiModal(button) {
+                const apiUrl = button.getAttribute('data-api-url');
+                const codelistName = button.getAttribute('data-codelist-name');
+                currentApiUrl = baseUrl + apiUrl;
+
+                document.getElementById('apiCodelistName').textContent = codelistName;
+                document.getElementById('apiEndpoint').value = currentApiUrl;
+
+                // Reset to JSON format
+                document.getElementById('formatJson').checked = true;
+                updateCurlExample();
+
+                document.getElementById('apiResponse').style.display = 'none';
+
+                const modal = new bootstrap.Modal(document.getElementById('apiModal'));
+                modal.show();
+            }
+
+            function copyToClipboard(elementId) {
+                const element = document.getElementById(elementId);
+                const text = element.value || element.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show brief feedback
+                    const btn = element.parentElement.querySelector('button') ||
+                               element.parentElement.parentElement.querySelector('button');
+                    if (btn) {
+                        const originalHtml = btn.innerHTML;
+                        btn.innerHTML = '<i class="bi bi-check"></i>';
+                        setTimeout(() => btn.innerHTML = originalHtml, 1500);
+                    }
+                });
+            }
+
+            function executeApiCall() {
+                const apiUrl = document.getElementById('apiEndpoint').value;
+                const responseDiv = document.getElementById('apiResponse');
+                const responseContent = document.getElementById('apiResponseContent');
+                const format = getSelectedFormat();
+                const acceptHeader = getAcceptHeader();
+
+                responseDiv.style.display = 'block';
+                responseContent.textContent = 'Loading...';
+
+                fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-API-Key': userApiKey,
+                        'Accept': acceptHeader
+                    }
+                })
+                .then(response => {
+                    if (format === 'xml') {
+                        return response.text();
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (format === 'xml') {
+                        // Format XML for display
+                        responseContent.textContent = formatXml(data);
+                    } else {
+                        responseContent.textContent = JSON.stringify(data, null, 2);
+                    }
+                })
+                .catch(error => {
+                    responseContent.textContent = 'Error: ' + error.message;
+                });
+            }
+
+            function formatXml(xml) {
+                // Simple XML formatter
+                const PADDING = '  ';
+                let formatted = '';
+                let pad = 0;
+                xml.split(/>\s*</).forEach((node, index) => {
+                    if (index > 0) {
+                        if (node.match(/^\/\w/)) pad--;
+                        formatted += '\n' + PADDING.repeat(pad);
+                    }
+                    if (node.match(/^<?\w[^>]*[^\/]$/)) pad++;
+                    formatted += (index > 0 ? '<' : '') + node + (index < xml.split(/>\s*</).length - 1 ? '>' : '');
+                });
+                return formatted;
+            }
+
+            function filterCodelists() {
+                const searchValue = document.getElementById('searchInput').value.toLowerCase();
+                const items = document.querySelectorAll('.codelist-item');
+
+                items.forEach(item => {
+                    const searchData = item.getAttribute('data-search').toLowerCase();
+                    if (searchData.includes(searchValue)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+    </th:block>
+</body>
+</html>

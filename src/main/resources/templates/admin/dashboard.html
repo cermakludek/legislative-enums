@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{admin.dashboard.title}">Admin Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{admin.dashboard.title}">Admin Dashboard</h2>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2" th:text="#{admin.dashboard.totalUsers}">Total Users</h6>
+                                <h2 class="card-title mb-0" th:text="${stats.totalUsers}">0</h2>
+                            </div>
+                            <i class="bi bi-people fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2" th:text="#{admin.dashboard.activeApiKeys}">Active API Keys</h6>
+                                <h2 class="card-title mb-0">
+                                    <span th:text="${stats.activeApiKeys}">0</span>
+                                    <small class="fs-6">/ <span th:text="${stats.totalApiKeys}">0</span></small>
+                                </h2>
+                            </div>
+                            <i class="bi bi-key fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2" th:text="#{admin.dashboard.requestsToday}">Requests Today</h6>
+                                <h2 class="card-title mb-0" th:text="${stats.totalRequestsToday}">0</h2>
+                            </div>
+                            <i class="bi bi-graph-up fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2" th:text="#{admin.dashboard.requestsMonth}">Requests This Month</h6>
+                                <h2 class="card-title mb-0" th:text="${stats.totalRequestsMonth}">0</h2>
+                            </div>
+                            <i class="bi bi-calendar-check fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Stats Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted" th:text="#{admin.dashboard.requestsWeek}">Requests This Week</h6>
+                                <h3 class="card-title mb-0" th:text="${stats.totalRequestsWeek}">0</h3>
+                            </div>
+                            <i class="bi bi-calendar-week fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted" th:text="#{admin.dashboard.requestsAllTime}">All Time Requests</h6>
+                                <h3 class="card-title mb-0" th:text="${stats.totalRequestsAllTime}">0</h3>
+                            </div>
+                            <i class="bi bi-infinity fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0" th:text="#{admin.dashboard.dailyRequests}">Daily Requests (Last 30 Days)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="dailyChart" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0" th:text="#{admin.dashboard.responseFormat}">Response Format (JSON vs XML)</h5>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <div th:if="${stats.jsonRequestCount + stats.xmlRequestCount > 0}" style="position: relative; width: 100%; max-width: 280px;">
+                            <canvas id="formatChart"></canvas>
+                        </div>
+                        <div th:if="${stats.jsonRequestCount + stats.xmlRequestCount == 0}" class="text-center text-muted">
+                            <i class="bi bi-pie-chart fs-1 mb-2"></i>
+                            <p th:text="#{admin.dashboard.noFormatData}">No format data available yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0" th:text="#{admin.dashboard.topEndpoints}">Top Endpoints</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th th:text="#{admin.dashboard.endpoint}">Endpoint</th>
+                                        <th class="text-end" th:text="#{admin.dashboard.requests}">Requests</th>
+                                        <th class="text-end" th:text="#{admin.dashboard.avgTime}">Avg Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ep : ${stats.topEndpoints}">
+                                        <td class="font-monospace small" th:text="${ep.endpoint}">endpoint</td>
+                                        <td class="text-end" th:text="${ep.requestCount}">0</td>
+                                        <td class="text-end">
+                                            <span th:if="${ep.avgResponseTimeMs != null}" th:text="${#numbers.formatDecimal(ep.avgResponseTimeMs, 0, 1)} + ' ms'">0 ms</span>
+                                            <span th:if="${ep.avgResponseTimeMs == null}">-</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(stats.topEndpoints)}">
+                                        <td colspan="3" class="text-center text-muted" th:text="#{admin.dashboard.noData}">No data available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0" th:text="#{admin.dashboard.topUsers}">Top Users</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th th:text="#{admin.dashboard.user}">User</th>
+                                        <th th:text="#{admin.dashboard.email}">Email</th>
+                                        <th class="text-end" th:text="#{admin.dashboard.requests}">Requests</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${stats.topUsers}">
+                                        <td th:text="${user.username}">username</td>
+                                        <td class="small" th:text="${user.email}">email</td>
+                                        <td class="text-end" th:text="${user.requestCount}">0</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(stats.topUsers)}">
+                                        <td colspan="3" class="text-center text-muted" th:text="#{admin.dashboard.noData}">No data available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Requests -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0" th:text="#{admin.dashboard.recentRequests}">Recent Requests</h5>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Status filter">
+                            <button type="button" class="btn btn-outline-secondary active" data-status-filter="all" th:text="#{admin.dashboard.filter.all}">All</button>
+                            <button type="button" class="btn btn-outline-success" data-status-filter="2xx">2xx</button>
+                            <button type="button" class="btn btn-outline-warning" data-status-filter="3xx">3xx</button>
+                            <button type="button" class="btn btn-outline-danger" data-status-filter="4xx">4xx</button>
+                            <button type="button" class="btn btn-outline-danger" data-status-filter="5xx">5xx</button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="recentRequestsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th th:text="#{admin.dashboard.time}">Time</th>
+                                        <th th:text="#{admin.dashboard.endpoint}">Endpoint</th>
+                                        <th th:text="#{admin.dashboard.user}">User</th>
+                                        <th th:text="#{admin.dashboard.status}">Status</th>
+                                        <th th:text="#{admin.dashboard.responseTime}">Response Time</th>
+                                        <th th:text="#{admin.dashboard.ip}">IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="req : ${stats.recentRequests}" th:data-status="${req.responseStatus}">
+                                        <td class="small" th:text="${#temporals.format(req.timestamp, 'dd.MM.yyyy HH:mm:ss')}">timestamp</td>
+                                        <td class="font-monospace small" th:text="${req.endpoint}">endpoint</td>
+                                        <td th:text="${req.username}">username</td>
+                                        <td>
+                                            <span th:if="${req.responseStatus != null}"
+                                                  class="badge"
+                                                  th:classappend="${req.responseStatus >= 200 && req.responseStatus < 300 ? 'bg-success' : (req.responseStatus >= 400 ? 'bg-danger' : 'bg-warning')}"
+                                                  th:text="${req.responseStatus}">200</span>
+                                            <span th:if="${req.responseStatus == null}" class="badge bg-secondary">-</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span th:if="${req.responseTimeMs != null}" th:text="${req.responseTimeMs + ' ms'}">0 ms</span>
+                                            <span th:if="${req.responseTimeMs == null}">-</span>
+                                        </td>
+                                        <td class="font-monospace small" th:text="${req.ipAddress ?: '-'}">ip</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(stats.recentRequests)}" class="no-data-row">
+                                        <td colspan="6" class="text-center text-muted" th:text="#{admin.dashboard.noData}">No data available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <small class="text-muted" id="pagerInfo"></small>
+                        <nav aria-label="Recent requests pagination">
+                            <ul class="pagination pagination-sm mb-0" id="pager">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script th:inline="javascript">
+            var dailyStats = [[${stats.dailyStats}]];
+            var jsonCount = [[${stats.jsonRequestCount}]];
+            var xmlCount = [[${stats.xmlRequestCount}]];
+            var labelRequests = [[#{admin.dashboard.requests}]];
+            var labelJson = [[#{admin.dashboard.json}]];
+            var labelXml = [[#{admin.dashboard.xml}]];
+
+            var labels = Object.keys(dailyStats);
+            var data = Object.values(dailyStats);
+
+            // Daily requests bar chart
+            new Chart(document.getElementById('dailyChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelRequests,
+                        data: data,
+                        backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                        borderColor: 'rgb(13, 110, 253)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pie chart for JSON vs XML
+            if (jsonCount + xmlCount > 0) {
+                var formatCtx = document.getElementById('formatChart').getContext('2d');
+
+                // Create gradient for 3D effect
+                var jsonGradient = formatCtx.createLinearGradient(0, 0, 0, 300);
+                jsonGradient.addColorStop(0, '#4CAF50');
+                jsonGradient.addColorStop(1, '#2E7D32');
+
+                var xmlGradient = formatCtx.createLinearGradient(0, 0, 0, 300);
+                xmlGradient.addColorStop(0, '#FF9800');
+                xmlGradient.addColorStop(1, '#E65100');
+
+                new Chart(formatCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [labelJson, labelXml],
+                        datasets: [{
+                            data: [jsonCount, xmlCount],
+                            backgroundColor: [jsonGradient, xmlGradient],
+                            borderColor: ['#2E7D32', '#E65100'],
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        cutout: '40%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        var total = jsonCount + xmlCount;
+                                        var value = context.raw;
+                                        var percentage = ((value / total) * 100).toFixed(1);
+                                        return context.label + ': ' + value + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true
+                        }
+                    }
+                });
+            }
+
+            // Pagination and filtering for Recent Requests
+            var pageSize = 15;
+            var currentPage = 1;
+            var currentFilter = 'all';
+            var labelPage = [[#{admin.dashboard.pager.page}]];
+            var labelOf = [[#{admin.dashboard.pager.of}]];
+            var labelShowing = [[#{admin.dashboard.pager.showing}]];
+
+            function getFilteredRows() {
+                var rows = document.querySelectorAll('#recentRequestsTable tbody tr[data-status]');
+                var filtered = [];
+                rows.forEach(function(row) {
+                    var status = parseInt(row.getAttribute('data-status'));
+                    var match = false;
+                    if (currentFilter === 'all') {
+                        match = true;
+                    } else if (currentFilter === '2xx' && status >= 200 && status < 300) {
+                        match = true;
+                    } else if (currentFilter === '3xx' && status >= 300 && status < 400) {
+                        match = true;
+                    } else if (currentFilter === '4xx' && status >= 400 && status < 500) {
+                        match = true;
+                    } else if (currentFilter === '5xx' && status >= 500 && status < 600) {
+                        match = true;
+                    }
+                    if (match) filtered.push(row);
+                });
+                return filtered;
+            }
+
+            function updatePagination() {
+                var filteredRows = getFilteredRows();
+                var totalRows = filteredRows.length;
+                var totalPages = Math.ceil(totalRows / pageSize);
+
+                if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+
+                var startIdx = (currentPage - 1) * pageSize;
+                var endIdx = Math.min(startIdx + pageSize, totalRows);
+
+                // Hide all rows first
+                document.querySelectorAll('#recentRequestsTable tbody tr[data-status]').forEach(function(row) {
+                    row.style.display = 'none';
+                });
+
+                // Show only rows for current page
+                for (var i = startIdx; i < endIdx; i++) {
+                    filteredRows[i].style.display = '';
+                }
+
+                // Update pager info
+                var pagerInfo = document.getElementById('pagerInfo');
+                if (totalRows > 0) {
+                    pagerInfo.textContent = labelShowing + ' ' + (startIdx + 1) + '-' + endIdx + ' ' + labelOf + ' ' + totalRows;
+                } else {
+                    pagerInfo.textContent = '';
+                }
+
+                // Build pagination controls
+                var pager = document.getElementById('pager');
+                pager.innerHTML = '';
+
+                if (totalPages > 1) {
+                    // Previous button
+                    var prevLi = document.createElement('li');
+                    prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+                    var prevA = document.createElement('a');
+                    prevA.className = 'page-link';
+                    prevA.href = '#';
+                    prevA.innerHTML = '&laquo;';
+                    prevA.onclick = function(e) { e.preventDefault(); if (currentPage > 1) { currentPage--; updatePagination(); } };
+                    prevLi.appendChild(prevA);
+                    pager.appendChild(prevLi);
+
+                    // Page numbers
+                    var startPage = Math.max(1, currentPage - 2);
+                    var endPage = Math.min(totalPages, startPage + 4);
+                    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+                    for (var p = startPage; p <= endPage; p++) {
+                        var li = document.createElement('li');
+                        li.className = 'page-item' + (p === currentPage ? ' active' : '');
+                        var a = document.createElement('a');
+                        a.className = 'page-link';
+                        a.href = '#';
+                        a.textContent = p;
+                        (function(page) {
+                            a.onclick = function(e) { e.preventDefault(); currentPage = page; updatePagination(); };
+                        })(p);
+                        li.appendChild(a);
+                        pager.appendChild(li);
+                    }
+
+                    // Next button
+                    var nextLi = document.createElement('li');
+                    nextLi.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
+                    var nextA = document.createElement('a');
+                    nextA.className = 'page-link';
+                    nextA.href = '#';
+                    nextA.innerHTML = '&raquo;';
+                    nextA.onclick = function(e) { e.preventDefault(); if (currentPage < totalPages) { currentPage++; updatePagination(); } };
+                    nextLi.appendChild(nextA);
+                    pager.appendChild(nextLi);
+                }
+
+                // Show/hide no data message
+                var noDataRow = document.querySelector('#recentRequestsTable .no-data-row');
+                if (noDataRow) {
+                    noDataRow.style.display = totalRows === 0 ? '' : 'none';
+                }
+            }
+
+            // Status filter for Recent Requests
+            document.querySelectorAll('[data-status-filter]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    currentFilter = this.getAttribute('data-status-filter');
+                    currentPage = 1;
+
+                    // Update active button
+                    document.querySelectorAll('[data-status-filter]').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    updatePagination();
+                });
+            });
+
+            // Initialize pagination
+            updatePagination();
+        </script>
+    </th:block>
+</body>
+</html>

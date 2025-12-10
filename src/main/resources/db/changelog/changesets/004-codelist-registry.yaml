@@ -1,0 +1,181 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-codelist-registry-table
+      author: system
+      comment: Create codelist_registry table for managing available codelists
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: codelist_registry
+      changes:
+        - createTable:
+            tableName: codelist_registry
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_cs
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description_cs
+                  type: text
+              - column:
+                  name: description_en
+                  type: text
+              - column:
+                  name: web_url
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: api_url
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: icon_class
+                  type: varchar(50)
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+      rollback:
+        - dropTable:
+            tableName: codelist_registry
+
+  - changeSet:
+      id: 004-insert-voltage-levels-registry
+      author: system
+      comment: Register Voltage Levels codelist
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM codelist_registry WHERE code = 'VOLTAGE_LEVELS'
+      changes:
+        - insert:
+            tableName: codelist_registry
+            columns:
+              - column:
+                  name: code
+                  value: VOLTAGE_LEVELS
+              - column:
+                  name: name_cs
+                  value: Rozdělení napětí dle velikosti
+              - column:
+                  name: name_en
+                  value: Voltage Level Classifications
+              - column:
+                  name: description_cs
+                  value: Klasifikace elektrického napětí podle jeho velikosti (malé napětí, nízké napětí, vysoké napětí, velmi vysoké napětí, zvláště vysoké napětí, ultra vysoké napětí)
+              - column:
+                  name: description_en
+                  value: Classification of electrical voltage by magnitude (extra-low voltage, low voltage, high voltage, very high voltage, extra high voltage, ultra high voltage)
+              - column:
+                  name: web_url
+                  value: /web/voltage-levels
+              - column:
+                  name: api_url
+                  value: /api/v1/voltage-levels
+              - column:
+                  name: icon_class
+                  value: bi bi-lightning-charge
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: codelist_registry
+            where: code = 'VOLTAGE_LEVELS'
+
+  - changeSet:
+      id: 004-insert-network-types-registry
+      author: system
+      comment: Register Network Types codelist
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM codelist_registry WHERE code = 'NETWORK_TYPES'
+      changes:
+        - insert:
+            tableName: codelist_registry
+            columns:
+              - column:
+                  name: code
+                  value: NETWORK_TYPES
+              - column:
+                  name: name_cs
+                  value: Rozdělení sítí z hlediska vedení
+              - column:
+                  name: name_en
+                  value: Network Type Classifications
+              - column:
+                  name: description_cs
+                  value: Klasifikace elektrických sítí podle způsobu vedení a propojení (paprskové, okružní, mřížové sítě)
+              - column:
+                  name: description_en
+                  value: Classification of electrical networks by wiring and connection topology (radial, ring, mesh networks)
+              - column:
+                  name: web_url
+                  value: /web/network-types
+              - column:
+                  name: api_url
+                  value: /api/v1/network-types
+              - column:
+                  name: icon_class
+                  value: bi bi-diagram-3
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 2
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: codelist_registry
+            where: code = 'NETWORK_TYPES'

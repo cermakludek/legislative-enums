@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{user.title}">Users</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{user.title}">Users</h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th th:text="#{user.username}">Username</th>
+                            <th th:text="#{user.firstName}">First Name</th>
+                            <th th:text="#{user.lastName}">Last Name</th>
+                            <th th:text="#{user.email}">Email</th>
+                            <th th:text="#{user.role}">Role</th>
+                            <th th:text="#{user.usagePlan}">Usage Plan</th>
+                            <th th:text="#{user.enabled}">Enabled</th>
+                            <th th:text="#{user.createdAt}">Created At</th>
+                            <th th:text="#{common.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.id}">1</td>
+                            <td th:text="${user.username}">admin</td>
+                            <td th:text="${user.firstName != null && !user.firstName.isBlank()} ? ${user.firstName} : '-'">-</td>
+                            <td th:text="${user.lastName != null && !user.lastName.isBlank()} ? ${user.lastName} : '-'">-</td>
+                            <td th:text="${user.email}">admin@example.com</td>
+                            <td>
+                                <span th:class="${user.role == 'ADMIN' ? 'badge bg-danger' : (user.role == 'CONTRIBUTOR' ? 'badge bg-primary' : 'badge bg-secondary')}"
+                                      th:text="${user.role}">ADMIN</span>
+                            </td>
+                            <td>
+                                <span th:if="${user.usagePlan != null}" class="badge bg-info"
+                                      th:text="${user.usagePlan}">PER_MONTH</span>
+                                <span th:unless="${user.usagePlan != null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${user.enabled}" class="badge bg-success" th:text="#{common.yes}">Yes</span>
+                                <span th:unless="${user.enabled}" class="badge bg-secondary" th:text="#{common.no}">No</span>
+                            </td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</td>
+                            <td>
+                                <a th:href="@{/web/users/{id}/edit(id=${user.id})}" class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/web/users/{id}/delete(id=${user.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                            onclick="return confirm('Are you sure you want to delete this user?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{registration.title}">Registration</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap-icons.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h4 th:text="#{app.title}">Legislative Codelists</h4>
+                        <p class="mb-0" th:text="#{registration.title}">Registration</p>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                            <span th:text="${errorMessage}">Error message</span>
+                        </div>
+
+                        <form th:object="${registration}" th:action="@{/register}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label" th:text="#{registration.username}">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}"
+                                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                                           required minlength="3" maxlength="50">
+                                </div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label" th:text="#{registration.email}">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}"
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                           required>
+                                </div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label" th:text="#{user.firstName}">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                                           th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'"
+                                           maxlength="100">
+                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label" th:text="#{user.lastName}">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                                           th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'"
+                                           maxlength="100">
+                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label" th:text="#{registration.password}">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}"
+                                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                                           required minlength="8">
+                                </div>
+                                <div class="form-text" th:text="#{registration.password.hint}">Minimum 8 characters</div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label" th:text="#{registration.confirmPassword}">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
+                                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
+                                           required>
+                                </div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" th:text="#{registration.usagePlan}">Usage Plan</label>
+                                <div class="row g-2">
+                                    <div th:each="plan : ${usagePlans}" class="col-md-4">
+                                        <div class="form-check card h-100">
+                                            <div class="card-body text-center p-3">
+                                                <input class="form-check-input" type="radio" th:field="*{usagePlan}"
+                                                       th:id="${plan.name()}" th:value="${plan.name()}">
+                                                <label class="form-check-label d-block" th:for="${plan.name()}">
+                                                    <i th:class="${plan.name() == 'PER_MONTH' ? 'bi bi-calendar-month fs-2 text-primary' :
+                                                                   (plan.name() == 'PER_YEAR' ? 'bi bi-calendar-check fs-2 text-success' :
+                                                                   'bi bi-lightning fs-2 text-warning')}"></i>
+                                                    <div class="fw-bold mt-2" th:text="${plan.displayNameCs}">Plan Name</div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('usagePlan')}" th:errors="*{usagePlan}"></div>
+                            </div>
+
+                            <div class="alert alert-info mb-4">
+                                <i class="bi bi-info-circle"></i>
+                                <span th:text="#{registration.trial.info}">All new registrations include a free 1-month trial period.</span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-person-plus"></i> <span th:text="#{registration.submit}">Register</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <span th:text="#{registration.haveAccount}">Already have an account?</span>
+                            <a th:href="@{/login}" th:text="#{registration.login}">Log in</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

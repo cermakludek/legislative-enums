@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${codelist.id != null} ? #{codelist.registry.edit} : #{codelist.registry.create}">Codelist Registry Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${codelist.id != null} ? #{codelist.registry.edit} : #{codelist.registry.create}">Codelist Registry Form</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:object="${codelist}"
+                      th:action="${codelist.id != null} ? @{/web/codelists/{id}(id=${codelist.id})} : @{/web/codelists}"
+                      method="post">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label" th:text="#{codelist.registry.code}">Code</label>
+                            <input type="text" class="form-control" id="code" th:field="*{code}" required maxlength="50">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sortOrder" class="form-label" th:text="#{codelist.registry.sortOrder}">Sort Order</label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nameCs" class="form-label" th:text="#{codelist.registry.name} + ' (CS)'">Name (CS)</label>
+                            <input type="text" class="form-control" id="nameCs" th:field="*{nameCs}" required maxlength="100">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameCs')}" th:errors="*{nameCs}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nameEn" class="form-label" th:text="#{codelist.registry.name} + ' (EN)'">Name (EN)</label>
+                            <input type="text" class="form-control" id="nameEn" th:field="*{nameEn}" required maxlength="100">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameEn')}" th:errors="*{nameEn}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descriptionCs" class="form-label" th:text="#{codelist.registry.description} + ' (CS)'">Description (CS)</label>
+                        <textarea class="form-control" id="descriptionCs" th:field="*{descriptionCs}" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descriptionEn" class="form-label" th:text="#{codelist.registry.description} + ' (EN)'">Description (EN)</label>
+                        <textarea class="form-control" id="descriptionEn" th:field="*{descriptionEn}" rows="2"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="webUrl" class="form-label" th:text="#{codelist.registry.webUrl}">Web URL</label>
+                            <input type="text" class="form-control" id="webUrl" th:field="*{webUrl}" required maxlength="100"
+                                   placeholder="/web/...">
+                            <div class="form-text">Relative URL to the web interface for this codelist</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('webUrl')}" th:errors="*{webUrl}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="apiUrl" class="form-label" th:text="#{codelist.registry.apiUrl}">API URL</label>
+                            <input type="text" class="form-control" id="apiUrl" th:field="*{apiUrl}" required maxlength="100"
+                                   placeholder="/api/v1/...">
+                            <div class="form-text">Relative URL to the REST API endpoint</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('apiUrl')}" th:errors="*{apiUrl}"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="iconClass" class="form-label" th:text="#{codelist.registry.iconClass}">Icon Class</label>
+                            <input type="text" class="form-control" id="iconClass" th:field="*{iconClass}" maxlength="50"
+                                   placeholder="bi bi-lightning">
+                            <div class="form-text">Bootstrap Icons class (e.g., bi bi-lightning)</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validFrom" class="form-label" th:text="#{common.validFrom}">Valid From</label>
+                            <input type="date" class="form-control" id="validFrom" th:field="*{validFrom}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validTo" class="form-label" th:text="#{common.validTo}">Valid To</label>
+                            <input type="date" class="form-control" id="validTo" th:field="*{validTo}">
+                        </div>
+                    </div>
+
+                    <!-- Flags -->
+                    <div th:if="${not #lists.isEmpty(allFlags)}" class="mb-3">
+                        <label class="form-label" th:text="#{codelist.registry.flags}">Flags</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div th:each="flag : ${allFlags}" class="form-check">
+                                <input type="checkbox" class="form-check-input"
+                                       th:id="${'flag-' + flag.id}"
+                                       th:value="${flag.id}"
+                                       th:field="*{flagIds}">
+                                <label class="form-check-label" th:for="${'flag-' + flag.id}">
+                                    <span class="badge"
+                                          th:style="${flag.color != null ? 'background-color: ' + flag.color : ''}"
+                                          th:text="${flag.nameCs}">Flag</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> <span th:text="#{common.save}">Save</span>
+                        </button>
+                        <a th:href="@{/web/codelists/admin}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> <span th:text="#{common.cancel}">Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

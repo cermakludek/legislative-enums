@@ -1,0 +1,326 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-voltage-levels-table
+      author: system
+      comment: Create voltage_levels table
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: voltage_levels
+      changes:
+        - createTable:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_cs
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: voltage_range_cs
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: voltage_range_en
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+      rollback:
+        - dropTable:
+            tableName: voltage_levels
+
+  - changeSet:
+      id: 001-insert-voltage-level-MN
+      author: system
+      comment: Insert voltage level MN - malé napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'MN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: MN
+              - column:
+                  name: name_cs
+                  value: malé napětí
+              - column:
+                  name: name_en
+                  value: extra-low voltage
+              - column:
+                  name: voltage_range_cs
+                  value: do 50 V
+              - column:
+                  name: voltage_range_en
+                  value: up to 50 V
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'MN'
+
+  - changeSet:
+      id: 001-insert-voltage-level-NN
+      author: system
+      comment: Insert voltage level NN - nízké napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'NN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: NN
+              - column:
+                  name: name_cs
+                  value: nízké napětí
+              - column:
+                  name: name_en
+                  value: low voltage
+              - column:
+                  name: voltage_range_cs
+                  value: do 1000 V (1 kV)
+              - column:
+                  name: voltage_range_en
+                  value: up to 1000 V (1 kV)
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 2
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'NN'
+
+  - changeSet:
+      id: 001-insert-voltage-level-VN
+      author: system
+      comment: Insert voltage level VN - vysoké napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'VN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: VN
+              - column:
+                  name: name_cs
+                  value: vysoké napětí
+              - column:
+                  name: name_en
+                  value: high voltage
+              - column:
+                  name: voltage_range_cs
+                  value: do 52 kV
+              - column:
+                  name: voltage_range_en
+                  value: up to 52 kV
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 3
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'VN'
+
+  - changeSet:
+      id: 001-insert-voltage-level-VVN
+      author: system
+      comment: Insert voltage level VVN - velmi vysoké napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'VVN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: VVN
+              - column:
+                  name: name_cs
+                  value: velmi vysoké napětí
+              - column:
+                  name: name_en
+                  value: very high voltage
+              - column:
+                  name: voltage_range_cs
+                  value: do 300 kV
+              - column:
+                  name: voltage_range_en
+                  value: up to 300 kV
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 4
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'VVN'
+
+  - changeSet:
+      id: 001-insert-voltage-level-ZVN
+      author: system
+      comment: Insert voltage level ZVN - zvláště vysoké napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'ZVN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: ZVN
+              - column:
+                  name: name_cs
+                  value: zvláště vysoké napětí
+              - column:
+                  name: name_en
+                  value: extra high voltage
+              - column:
+                  name: voltage_range_cs
+                  value: do 800 kV
+              - column:
+                  name: voltage_range_en
+                  value: up to 800 kV
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 5
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'ZVN'
+
+  - changeSet:
+      id: 001-insert-voltage-level-UVN
+      author: system
+      comment: Insert voltage level UVN - ultra vysoké napětí
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT COUNT(*) FROM voltage_levels WHERE code = 'UVN'
+      changes:
+        - insert:
+            tableName: voltage_levels
+            columns:
+              - column:
+                  name: code
+                  value: UVN
+              - column:
+                  name: name_cs
+                  value: ultra vysoké napětí
+              - column:
+                  name: name_en
+                  value: ultra high voltage
+              - column:
+                  name: voltage_range_cs
+                  value: nad 800 kV
+              - column:
+                  name: voltage_range_en
+                  value: above 800 kV
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 6
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - delete:
+            tableName: voltage_levels
+            where: code = 'UVN'

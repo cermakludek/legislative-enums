@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-remove-active-add-validity
+      author: system
+      comment: Remove active column from codelists, add validity dates. Codelists now use valid_from/valid_to for validity, only flags keeps active boolean.
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/015-remove-active-add-validity.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false

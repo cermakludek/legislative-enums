@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="#{flag.title}">Flags</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 th:text="#{flag.title}">Flags</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group" aria-label="Validity filter">
+                    <a th:href="@{/web/flags}"
+                       th:class="${!showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.validOnly}">Valid Only</a>
+                    <a th:href="@{/web/flags(showAll=true)}"
+                       th:class="${showAll} ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                       th:text="#{common.filter.showAll}">Show All</a>
+                </div>
+                <a th:href="@{/web/flags/create}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{flag.create}">Create Flag</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th th:text="#{flag.code}">Code</th>
+                            <th th:text="#{flag.name}">Name</th>
+                            <th th:text="#{flag.color}">Color</th>
+                            <th th:text="#{flag.sortOrder}">Sort Order</th>
+                            <th th:text="#{flag.active}">Active</th>
+                            <th th:text="#{common.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="flag : ${flags}">
+                            <td th:text="${flag.code}">ELEC</td>
+                            <td>
+                                <span class="badge"
+                                      th:style="${flag.color != null ? 'background-color: ' + flag.color : 'background-color: #6c757d'}"
+                                      th:text="${#locale.language == 'cs' ? flag.nameCs : flag.nameEn}">Flag Name</span>
+                            </td>
+                            <td>
+                                <span th:if="${flag.color != null}"
+                                      class="d-inline-block rounded"
+                                      th:style="'width: 24px; height: 24px; background-color: ' + ${flag.color}"></span>
+                                <span th:unless="${flag.color != null}" class="text-muted">-</span>
+                            </td>
+                            <td th:text="${flag.sortOrder}">1</td>
+                            <td>
+                                <span th:if="${flag.active}" class="badge bg-success" th:text="#{common.yes}">Yes</span>
+                                <span th:unless="${flag.active}" class="badge bg-secondary" th:text="#{common.no}">No</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/web/flags/{id}/edit(id=${flag.id})}" class="btn btn-sm btn-outline-primary" th:title="#{common.edit}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/web/flags/{id}/delete(id=${flag.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:title="#{common.delete}"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

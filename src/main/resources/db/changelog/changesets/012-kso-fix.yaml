@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-kso-fix
+      author: system
+      comment: Fix KSO structure - correct 4-level hierarchy
+      changes:
+        - sqlFile:
+            path: db/changelog/changesets/012-kso-fix.sql
+            encoding: UTF-8
+            splitStatements: true
+            stripComments: false
